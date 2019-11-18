@@ -1,13 +1,19 @@
 [![Apache License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Build Status](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth.svg?branch=master)](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth)
 
+# THIS IS A DEVELEOPMENT FORK
+
 # Shibboleth-IdP3-TOTP-Auth
 > Working example of the TOTP authenticator. Work in progress! Refactoring needed! Localization needed.  
 
 Google authenticator authentication module for Shibboleth IdP v3.  
-Works conjunction with the User/Password flow. This module first calls authn/Password flow and after that flow is completed it asks token code from the user. User can also register a new token with this module.  
+The original version used the password flow and then called the totp flow.  The updated version (this fork) relies on the MFA flow to call the password flow first.
+This authn flow will take the c14n principal name and perform the token validation based on that.  This authn flow will not work by itself.
+
 
 Uses External LDAP, MongoDB(EXPERIMENTAL!) or Static for seed fetching.  
+The original implementation of this authn flow had a separate ldap configuration.  This implementation will assume the totp seed is stored in a database that the attribute resolver has the ability to pull from.
+It will also assume the attribute is encrypted using a secret key (configured in a properties file).
 
 Working example with Vagrant https://github.com/korteke/shibboleth-vagrant
 
