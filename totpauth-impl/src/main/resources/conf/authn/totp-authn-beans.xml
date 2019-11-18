@@ -35,7 +35,7 @@
         p:httpServletRequest-ref="shibboleth.HttpServletRequest"
         p:gAuth-ref="shibboleth.totp.gAuth">
     </bean>
-
+<!--
 	<bean id="contextSource" class="org.springframework.ldap.core.support.LdapContextSource">
 		<property name="url" value="LDAP_SERVER_URL" />
 		<property name="base" value="BASE_DN" />
@@ -46,14 +46,14 @@
 	<bean id="ldapTemplate" class="org.springframework.ldap.core.LdapTemplate">
 		<constructor-arg ref="contextSource" />
 	</bean>
-
+-->
 	<!-- For LDAP -->
-	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.LdapSeedFetcher">
+<!--	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.LdapSeedFetcher">
 		<constructor-arg ref="shibboleth.authn.seedAttribute" />
 		<constructor-arg ref="shibboleth.authn.userAttribute" />
 		<property name="ldapTemplate" ref="ldapTemplate" />
 	</bean>
-
+-->
 	<!-- For MongoDB -->
 	<!--bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.MongoSeedFetcher"/-->
 	<!-- 
@@ -64,7 +64,7 @@
 	-->
 	
 	<!-- For Dummy -->
-	<!--bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.DummySeedFetcher"/-->
+	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.DummySeedFetcher"/>
 	
 
 </beans>

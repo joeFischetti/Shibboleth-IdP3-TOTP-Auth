@@ -3,11 +3,6 @@
 	parent="authn.abstract, authn/conditions">
 
 	<!-- This is a login flow for TOTP authentication -->
-	<!-- First call UserName & Password flow -->
-	<subflow-state id="CallPasswordFlow" subflow="authn/Password">
-		<input name="calledAsSubflow" value="true" />
-		<transition on="proceed" to="DisplayTotpForm" />
-	</subflow-state>
 
 	<!-- Display Token form -->
 	<view-state id="DisplayTotpForm" view="totp">

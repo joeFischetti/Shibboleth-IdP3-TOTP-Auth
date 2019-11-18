@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.shibboleth.idp</groupId>
 		<artifactId>idp-parent</artifactId>
-		<version>3.2.0</version>
+		<version>3.3.0</version>
 	</parent>
 	<groupId>net.kvak.shibboleth</groupId>
 	<artifactId>totpauth-parent</artifactId>
@@ -24,7 +24,7 @@
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		<shib.idp.version>3.2.0</shib.idp.version>
+		<shib.idp.version>3.3.0</shib.idp.version>
 		<gson.version>2.3.1</gson.version>
 		<mobile.auth.version>0.5.1</mobile.auth.version>
 		<com.warrenstrange.version>0.5.0</com.warrenstrange.version>
