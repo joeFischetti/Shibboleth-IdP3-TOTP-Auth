@@ -43,9 +43,13 @@ public class LdapSeedFetcher implements SeedFetcher {
 		this.userAttribute = userAttribute;
 	}
 
+	
+
 	@Override
-	public void getSeed(String username, TokenUserContext tokenUserCtx, 
-			@Nonnull final ProfileRequestContext profileRequestContext) {
+	public void getSeed(String username, TokenUserContext tokenUserCtx, String logPrefix,
+			@Nonnull final ProfileRequestContext profileRequestContext){
+
+
 		log.debug("Entering LdapSeedFetcher");
 
 		try {
@@ -69,9 +73,10 @@ public class LdapSeedFetcher implements SeedFetcher {
 
 	}
 
-	@Override
-	public void getSeed(String username, TokenUserContext tokenUserCtx, String logPrefix,
-			@Nonnull final ProfileRequestContext profileRequestContext){}
+
+
+
+
 
 	public ArrayList<String> getAllTokenCodes(String user) {
 		log.debug("Entering getAllTokenCodes");

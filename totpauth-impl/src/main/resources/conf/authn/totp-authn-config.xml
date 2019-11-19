@@ -12,12 +12,9 @@
 	<bean id="shibboleth.authn.tokenCodeField" class="java.lang.String" c:_0="j_tokenNumber" />
 
 	<!-- LDAP related fields -->
-	<bean id="shibboleth.authn.seedAttribute" class="java.lang.String" c:_0="description" />
+	<bean id="shibboleth.totpauthn.seedAttribute" class="java.lang.String" c:_0="description" />
+	<bean id="shibboleth.totpauthn.encryptionKey" class="java.lang.String" c:_0="somerandomkey" />
 	<bean id="shibboleth.authn.userAttribute" class="java.lang.String" c:_0="uid" />
-
-	<!-- MongoDB related fields -->
-	<bean id="shibboleth.authn.mongoDbName" class="java.lang.String" c:_0="tokenSeed" />
-	<bean id="shibboleth.authn.mongoDbUrl" class="java.lang.String" c:_0="127.0.0.1" />
 
 	<!-- GoogleAuthenticator class to be injected to the TOTP validator. Default settings (offset 3 codes and so on) -->
 	<bean id="shibboleth.totp.gAuth" class="com.warrenstrange.googleauth.GoogleAuthenticator" />

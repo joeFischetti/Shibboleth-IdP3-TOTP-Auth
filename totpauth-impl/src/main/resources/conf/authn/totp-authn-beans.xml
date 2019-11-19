@@ -50,9 +50,9 @@
 
 	<!-- For AttributeSourcedSeedFetcher -->
 	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.AttributeSourcedSeedFetcher"
-		p:attrRes-ref="shibboleth.AttributeResolverService">
+		p:attrRes-ref="shibboleth.AttributeResolverService"
+		p:encryptionKey-ref="shibboleth.totpauthn.encryptionKey"
+		p:seedAttribute-ref="shibboleth.totpauthn.seedAttribute"/>
 
-		<constructor-arg ref="shibboleth.authn.seedAttribute" />
-	</bean>
 
 </beans>

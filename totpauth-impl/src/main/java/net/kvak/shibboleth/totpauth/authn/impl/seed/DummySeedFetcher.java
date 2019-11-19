@@ -17,18 +17,14 @@ public class DummySeedFetcher implements SeedFetcher {
 	}
 
 	@Override
-	public void getSeed(String username, TokenUserContext tokenUserCtx, 
-			@Nonnull final ProfileRequestContext profileRequestContext) {
+	public void getSeed(String username, TokenUserContext tokenUserCtx, String logPrefix,
+			@Nonnull final ProfileRequestContext profileRequestContext){
+
 		// Dummy seed for testing
 		tokenUserCtx.setTokenSeed("G24YUKCHHXRDWCPR");
 		log.info("Returning default seed for user {}", username);
 
 	}
-
-
-	@Override
-	public void getSeed(String username, TokenUserContext tokenUserCtx, String logPrefix,
-			@Nonnull final ProfileRequestContext profileRequestContext){}
 
 
 }
