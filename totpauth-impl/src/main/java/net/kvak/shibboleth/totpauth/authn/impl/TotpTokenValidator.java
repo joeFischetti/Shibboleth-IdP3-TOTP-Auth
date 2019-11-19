@@ -35,7 +35,7 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
  * {@link net.shibboleth.idp.authn.AuthenticationResult} based on submitted
  * tokencode and username
  * 
- * @author korteke
+ * @author Joe Fischetti
  *
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -51,10 +51,10 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 	@NotEmpty
 	private GoogleAuthenticator gAuth;
 
-	/** Username context for username **/
-	@Nonnull
-	@NotEmpty
-	private UsernamePasswordContext upCtx;
+//	/** Username context for username **/
+//	@Nonnull
+//	@NotEmpty
+//	private UsernamePasswordContext upCtx;
 
 	/** Injected seedFetcher **/
 	@Nonnull
@@ -84,78 +84,89 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 
 	}
 
-    @Override
-    protected boolean doPreExecute(
-            @Nonnull ProfileRequestContext profileRequestContext,
-            @Nonnull AuthenticationContext authenticationContext) {
+	@Override
+	protected boolean doPreExecute(
+			@Nonnull ProfileRequestContext profileRequestContext,
+			@Nonnull AuthenticationContext authenticationContext) {
 
-        if (!super.doPreExecute(profileRequestContext, authenticationContext)) {
-            return false;
-        }
+		if (!super.doPreExecute(profileRequestContext, authenticationContext)) {
+			return false;
+		}
 
 
-	usernameLookupStrategy = new CanonicalUsernameLookupStrategy();
-	username = usernameLookupStrategy.apply(profileRequestContext);
+		usernameLookupStrategy = new CanonicalUsernameLookupStrategy();
+		username = usernameLookupStrategy.apply(profileRequestContext);
 	
 
-        if (username == null) {
-        	log.info("{} No previous SubjectContext or Principal is set", getLogPrefix());
-        	handleError(profileRequestContext, authenticationContext, "NoCredentials", AuthnEventIds.NO_CREDENTIALS);
-        	return false;
-        }
-        
-    	log.info("{} PrincipalName from SubjectContext is {}", getLogPrefix(), username);
-        return true;
-    }
-
-	@Override
-	protected Subject populateSubject(Subject subject) {
-		log.info("{} TokenValidator populateSubject is called", getLogPrefix());		
-		if (StringSupport.trimOrNull(username) != null) {
-			log.info("{} Populate subject {}", getLogPrefix(), username);
-			subject.getPrincipals().add(new UsernamePrincipal(username));
-			return subject;
+		if (username == null) {
+			log.info("{} No previous SubjectContext or Principal is set", getLogPrefix());
+			handleError(profileRequestContext, authenticationContext, "NoCredentials", AuthnEventIds.NO_CREDENTIALS);
+			return false;
 		}
-		return null;
+        
+		log.info("{} PrincipalName from SubjectContext is {}", getLogPrefix(), username);
+		return true;
 	}
 
+
+
 	@Override
-	protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext,
+	protected void doExecute(
+			@Nonnull final ProfileRequestContext profileRequestContext,
 			@Nonnull final AuthenticationContext authenticationContext) {
+
+		//log output
 		log.info("{} Entering totpValidator for username: {}", getLogPrefix(),username);
 
-		try {
 
+		try {
+			
+			//Create a new TokenUserContext
 			TokenUserContext tokenCtx = authenticationContext.getSubcontext(TokenUserContext.class, true);
-			//upCtx = authenticationContext.getSubcontext(UsernamePasswordContext.class, true);
+
+
 			log.info("{} Validating for user:  {}", getLogPrefix(), username);
 
-			/* Add seeds from repository to tokenUserContext */
+			//Fetch the seed(s) using the configured method
+			//	Pass in the username, tokenCtx, logPrefix, and profileRequestContext (for attribute resolution)
 			seedFetcher.getSeed(username, tokenCtx, getLogPrefix(), profileRequestContext);
+
+			//Log what we got as the users token (from user input)
 			log.info("{} Received the following user token:  {}", getLogPrefix(),tokenCtx.getTokenCode());
 
+
 			if (tokenCtx.getState() == AuthState.OK) {
-				log.info("{} Validating user: {} provided token:  {} against seed", getLogPrefix(), username, tokenCtx.getTokenSeed());
+
+				//Debug output only
+				log.info("{} Validating user: {} seeds:  {} against seed", getLogPrefix(), username, tokenCtx.getTokenSeed());
 				
-				/* Get seeds from tokenUserContext */
+				//Get seeds from tokenUserContext
 				ArrayList<String> seeds = tokenCtx.getTokenSeed();
 
-				/* Iterate over seeds and try to validate them */
+				//Step through the seeds and validate each one.
 				Iterator<String> it = seeds.iterator();
 				while (it.hasNext()) {
+
+					//[Attempt to] Validate the token
 					result = validateToken(it.next(), tokenCtx.getTokenCode());
 					if (result) {
+
+						//We got a valid result
 						log.info("{} Token authentication success for user: {}", getLogPrefix(), username);
 						tokenCtx.setState(AuthState.OK);
-						//buildAuthenticationResult(profileRequestContext, authenticationContext);
+
+						//Return
 						return;
 					}
 				}
 			}
+
 			else{
 				log.info("{} Failed to get tokenCtx state", getLogPrefix());
 			}
-			
+
+			//If the user hasn't registered for a token, we should print something out to the page
+			//	So they know to contact the appropriate people
 			if (tokenCtx.getState() == AuthState.REGISTER) {
 				log.info("{} User: {} has not registered token", getLogPrefix(), username);
 				handleError(profileRequestContext, authenticationContext, "RegisterToken",
@@ -163,6 +174,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 				return;
 			}
 
+			//If we got this far and result is false, it means they didn't auth
 			if (!result) {
 				log.info("{} Token authentication failed for user: {}", getLogPrefix(), username);
 				tokenCtx.setState(AuthState.CANT_VALIDATE);
@@ -170,6 +182,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 						AuthnEventIds.INVALID_CREDENTIALS);
 				return;
 			}
+
 
 		} catch (Exception e) {
 			log.warn("{} Login by {} produced exception", getLogPrefix(), username, e);
@@ -179,6 +192,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 
 	}
 
+	//Validate the token using gauth
 	@Override
 	public boolean validateToken(String seed, int token) {
 		log.info("{} Entering validatetoken", getLogPrefix());
@@ -190,5 +204,19 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 		log.info("{} Token code validation failed. Seed is not 16 char long", getLogPrefix());
 		return false;
 	}
-	
+
+
+	//populate the Subject name and return it.  Using the principal from the 
+	//CanonicalUsernameLookupStrategy that we ran first
+	@Override
+	protected Subject populateSubject(Subject subject) {
+		log.info("{} TokenValidator populateSubject is called", getLogPrefix());		
+		if (StringSupport.trimOrNull(username) != null) {
+			log.info("{} Populate subject {}", getLogPrefix(), username);
+			subject.getPrincipals().add(new UsernamePrincipal(username));
+			return subject;
+		}
+		return null;
+	}
+
 }
