@@ -11,16 +11,18 @@ The original version used the password flow and then called the totp flow.  The 
 This authn flow will take the c14n principal name and perform the token validation based on that.  This authn flow will not work by itself.
 
 
-Uses External LDAP, MongoDB(EXPERIMENTAL!) or Static for seed fetching.  
+"Uses External LDAP, MongoDB(EXPERIMENTAL!) or Static for seed fetching.  "
 The original implementation of this authn flow had a separate ldap configuration.  This implementation will assume the totp seed is stored in a database that the attribute resolver has the ability to pull from.
 It will also assume the attribute is encrypted using a secret key (configured in a properties file).
 
-Working example with Vagrant https://github.com/korteke/shibboleth-vagrant
+As of this writing, that has been implemented/tested using a property value for the attribute and a hard coded encryption key.  
+The encryption scheme chosen is quite basic.
+
 
 Requirements
 ------------
 
-Shibboleth IdP v3.2.x  
+Shibboleth IdP v3.4.5
 Java 8
 
 Installing
@@ -49,7 +51,7 @@ Directory structure:
 
 Modify $IDP_HOME/conf/idp.properties  
 
-idp.authn.flows = Password --> idp.authn.flows = Password|Totp
+idp.authn.flows = Password --> idp.authn.flows = MFA
 
 Add TOTP bean to $IDP_HOME/conf/authn/general-authn.xml, to the element:
 ```
@@ -97,30 +99,12 @@ This can be changed by editing bean "shibboleth.authn.userAttribute" at totp-aut
 
 * Make sure that bean id "shibboleth.totp.seedfetcher" is pointing to "net.kvak.shibboleth.totpauth.authn.impl.seed.DummySeedFetcher"
 * Register this token to your mobile device:  
-![alt tag](https://raw.githubusercontent.com/korteke/Shibboleth-IdP3-TOTP-Auth/master/totp_code_qr.png)
 
 Adding new seed to user
 ----------------------
 
-~~At the moment you need to add your token codes to the repository with external process. I will create some kind of registeration flow to the IdP.~~   
-TOTP login page has a button called "Register a new token" which triggers a new flow where users can register their tokens. ATM the button is visible to all users. Next version you can choose if the users can register new tokens.  
+"~~At the moment you need to add your token codes to the repository with external process. I will create some kind of registeration flow to the IdP.~~   "
 
-This works at the moment only with the LDAP seedFetcher.
-MongoDB registeration flow is probably coming soon.  
+At the time of writing, I have no plans to impelement a registration process within the IdP for the seed.  This can (and should?) be handled elsewhere/via some outside process.  The IdP should be used for login events, not account management.
 
 
-Requesting new Authentication Context Class with Shibboleth SP
------------------------------------------------
-
-(for testing purpose)
-Add new Session Initiator
-
-```
-<SessionInitiator type="Chaining" Location="/totp" id="totp" entityID="https://IDP-ENTITY-ID">  
-  <SessionInitiator type="SAML2" acsIndex="1" template="bindingTemplate.html" authnContextClassRef="urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken"/>  
-</SessionInitiator>  
-```
-
-After the new SessionInitiator is registered you can call your SP with https://YOUR_SP_ADDRESS/Shibboleth.sso/totp  
-That creates SAML 2.0 Authn Request where SP wants authnContextClassRef == urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken  
-So when the IdP receives that request it passes the request to the authn/Totp authentication flow (this module)
