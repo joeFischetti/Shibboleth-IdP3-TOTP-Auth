@@ -109,4 +109,11 @@ Adding new seed to user
 
 At the time of writing, I have no plans to impelement a registration process within the IdP for the seed.  This can (and should?) be handled elsewhere/via some outside process.  The IdP should be used for login events, not account management.
 
+That said, there's a helper application in EncryptionHelpers that will generate 16character strings that can be used as seeds, along with an encrypted value for insertion into the database.  The key used for encryption is hardcoded.
 
+You can build the helper:
+cd EncryptionHelpers
+./build.sh
+
+And run it with:
+./run.sh
