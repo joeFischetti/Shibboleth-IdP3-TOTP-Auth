@@ -11,7 +11,7 @@ The original version used the password flow and then called the totp flow.  The 
 This authn flow will take the c14n principal name and perform the token validation based on that.  This authn flow will not work by itself.
 
 
-"Uses External LDAP, MongoDB(EXPERIMENTAL!) or Static for seed fetching.  "
+"~~Uses External LDAP, MongoDB(EXPERIMENTAL!) or Static for seed fetching.~~"
 The original implementation of this authn flow had a separate ldap configuration.  This implementation will assume the totp seed is stored in a database that the attribute resolver has the ability to pull from.
 It will also assume the attribute is encrypted using a secret key (configured in a properties file).
 
@@ -105,11 +105,11 @@ This can be changed by editing bean "shibboleth.authn.userAttribute" at totp-aut
 Adding new seed to user
 ----------------------
 
-"~~At the moment you need to add your token codes to the repository with external process. I will create some kind of registeration flow to the IdP.~~   "
+"~~At the moment you need to add your token codes to the repository with external process. I will create some kind of registeration flow to the IdP.~~"
 
-At the time of writing, I have no plans to impelement a registration process within the IdP for the seed.  This can (and should?) be handled elsewhere/via some outside process.  The IdP should be used for login events, not account management.
+I have no plans to impelement a registration process within the IdP for the seed.  This can (and should?) be handled elsewhere/via some outside process.  The IdP should be used for login events, not account management.
 
-That said, there's a helper application in EncryptionHelpers that will generate 16character strings that can be used as seeds, along with an encrypted value for insertion into the database.  The key used for encryption is hardcoded.
+That said, there's a helper application in EncryptionHelpers that will generate 16character strings that can be used as seeds, along with an encrypted value for insertion into the database.  The key used for encryption is hardcoded.  In addition, it will also print out a url which can be used as input for a QR code generator.
 
 You can build the helper:
 cd EncryptionHelpers
@@ -117,3 +117,6 @@ cd EncryptionHelpers
 
 And run it with:
 ./run.sh
+
+Afterwards, run something like the following:
+qrencode -o '/path/to/png/outputfile' -s6 'otpauth://totp/Shibboleth?secret=SOMTHING'

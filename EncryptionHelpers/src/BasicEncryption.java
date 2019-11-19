@@ -18,28 +18,30 @@ public static void main(String args[]) throws Exception{
 	String plaintext;
 
 	if(args.length == 0){
-		System.out.println("No seed provided, generating a new one");
+		System.err.println("No seed provided, generating a new one");
 		//generateKey2();
 		//plaintext = "G24YUKCHHXRDWCPR";
 		plaintext = generateKey2();
 	}
 	else{
 
-		System.out.println("New seed provided as argument:  " + args[0]);
+		System.err.println("New seed provided as argument:  " + args[0]);
 		plaintext = new String(args[0]);
 	}
 	
-	System.out.println("The plaintext (for the client device):  " + plaintext);
+	System.err.println("The plaintext (for the client device):  " + plaintext);
 
 	String cipherText = encrypt2(plaintext, "somerandomkey");
 
 	//System.out.println("The ciphertext:  " + ASCIItoHEX(cipherText));
-	System.out.println("The ciphertext (store in the directory): totpseed=(" + cipherText + ")");
+	System.err.println("The ciphertext (store in the directory): totpseed=(" + cipherText + ")");
 
 	//String ct = "FE599E8D0E176594181B4326EBDB84307E83056FB0668CC6";
 
 	//System.out.println("The ciphertext: " + HEXtoASCII(ct));
-	System.out.println("The plaintext  (to verify decryption):  " + decrypt2(cipherText, "somerandomkey"));
+	System.err.println("The plaintext  (to verify decryption):  " + decrypt2(cipherText, "somerandomkey"));
+
+	System.out.println("otpauth://totp/Shibboleth?secret=" + plaintext);
 
 }
 
