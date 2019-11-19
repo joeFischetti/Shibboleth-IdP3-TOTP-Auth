@@ -18,6 +18,10 @@ It will also assume the attribute is encrypted using a secret key (configured in
 As of this writing, that has been implemented/tested using a property value for the attribute and a hard coded encryption key.  
 The encryption scheme chosen is quite basic.
 
+TODO
+-----
+Remove unused seed code - i.e. LDAP/FileBased/Mongo/etc/etc.  There's no point using external seed resolvers when the attribute resolver service is capable.
+
 
 Requirements
 ------------
