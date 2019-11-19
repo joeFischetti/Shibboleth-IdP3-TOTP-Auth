@@ -15,12 +15,10 @@ This authn flow will take the c14n principal name and perform the token validati
 The original implementation of this authn flow had a separate ldap configuration.  This implementation will assume the totp seed is stored in a database that the attribute resolver has the ability to pull from.
 It will also assume the attribute is encrypted using a secret key (configured in a properties file).
 
-As of this writing, that has been implemented/tested using a property value for the attribute and a hard coded encryption key.  
-The encryption scheme chosen is quite basic.
+
 
 TODO
 -----
-Remove unused seed code - i.e. LDAP/FileBased/Mongo/etc/etc.  There's no point using external seed resolvers when the attribute resolver service is capable.
 
 
 Requirements

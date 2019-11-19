@@ -14,11 +14,13 @@
 	<bean class="net.shibboleth.idp.profile.impl.ProfileActionBeanPostProcessor" />
 	<bean class="net.shibboleth.ext.spring.config.IdentifiableBeanPostProcessor" />
 
-	<import resource="totp-authn-config.xml" />
+	<bean id="shibboleth.totp.gAuth" class="com.warrenstrange.googleauth.GoogleAuthenticator" />
+
+
 
 	<bean id="ExtractTotpFromForm" class="net.kvak.shibboleth.totpauth.authn.impl.ExtractTokenFromForm" scope="prototype"
 		p:httpServletRequest-ref="shibboleth.HttpServletRequest" 
-		p:tokenCodeField-ref="shibboleth.authn.tokenCodeField" 
+		p:tokenCodeField="%{totpauthn.tokenCodeField}" 
 				/>
 
 	<bean id="TotpTokenValidator" class="net.kvak.shibboleth.totpauth.authn.impl.TotpTokenValidator" scope="prototype"
@@ -51,8 +53,8 @@
 	<!-- For AttributeSourcedSeedFetcher -->
 	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.AttributeSourcedSeedFetcher"
 		p:attrRes-ref="shibboleth.AttributeResolverService"
-		p:encryptionKey-ref="shibboleth.totpauthn.encryptionKey"
-		p:seedAttribute-ref="shibboleth.totpauthn.seedAttribute"/>
+		p:encryptionKey="%{totpauthn.encryptionKey}"
+		p:seedAttribute="%{totpauthn.seedAttribute}"/>
 
 
 </beans>
