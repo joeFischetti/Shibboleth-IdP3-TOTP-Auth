@@ -91,7 +91,7 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 					log.info("{} Found seed (encrypted) value:  {}", logPrefix, seedEncrypted);
 
 					try{
-						log.info("{} ASCII seed equivalent:  {}", logPrefix, decrypt2(seedEncrypted, "somerandomkey"));
+						log.info("{} Unencrypted Seed Value  {}", logPrefix, decrypt2(seedEncrypted, "somerandomkey"));
 						tokenUserCtx.setTokenSeed(decrypt2(seedEncrypted, "somerandomkey"));
 					}
 					catch(Exception e){

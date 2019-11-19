@@ -23,7 +23,7 @@ public class TotpUtils {
 	/** Class logger. */
 	@Nonnull
 	@NotEmpty
-	private final Logger log = LoggerFactory.getLogger(RegisterNewToken.class);
+	private final Logger log = LoggerFactory.getLogger(TotpTokenValidator.class);
 	
 	GoogleAuthenticator gAuth;
 	
