@@ -10,6 +10,9 @@ import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.opensaml.profile.context.ProfileRequestContext;
+import javax.annotation.Nonnull;
+
 
 import net.kvak.shibboleth.totpauth.api.authn.SeedFetcher;
 import net.kvak.shibboleth.totpauth.api.authn.context.TokenUserContext;
@@ -41,7 +44,8 @@ public class LdapSeedFetcher implements SeedFetcher {
 	}
 
 	@Override
-	public void getSeed(String username, TokenUserContext tokenUserCtx) {
+	public void getSeed(String username, TokenUserContext tokenUserCtx, 
+			@Nonnull final ProfileRequestContext profileRequestContext) {
 		log.debug("Entering LdapSeedFetcher");
 
 		try {
@@ -64,6 +68,10 @@ public class LdapSeedFetcher implements SeedFetcher {
 		}
 
 	}
+
+	@Override
+	public void getSeed(String username, TokenUserContext tokenUserCtx, String logPrefix,
+			@Nonnull final ProfileRequestContext profileRequestContext){}
 
 	public ArrayList<String> getAllTokenCodes(String user) {
 		log.debug("Entering getAllTokenCodes");

@@ -61,7 +61,6 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 	@NotEmpty
 	private SeedFetcher seedFetcher;
 
-
 	private String username;
 	private Function<ProfileRequestContext,String> usernameLookupStrategy;
 
@@ -77,6 +76,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 	public void setgAuth(@Nonnull @NotEmpty final GoogleAuthenticator gAuth) {
 		this.gAuth = gAuth;
 	}
+
 
 	/** Constructor **/
 	public TotpTokenValidator() {
@@ -131,7 +131,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 			log.info("{} Validating for user:  {}", getLogPrefix(), username);
 
 			/* Add seeds from repository to tokenUserContext */
-			seedFetcher.getSeed(username, tokenCtx);
+			seedFetcher.getSeed(username, tokenCtx, getLogPrefix(), profileRequestContext);
 			log.info("{} Received the following user token:  {}", getLogPrefix(),tokenCtx.getTokenCode());
 
 			if (tokenCtx.getState() == AuthState.OK) {

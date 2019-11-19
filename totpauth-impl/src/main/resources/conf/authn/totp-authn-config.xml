@@ -12,7 +12,7 @@
 	<bean id="shibboleth.authn.tokenCodeField" class="java.lang.String" c:_0="j_tokenNumber" />
 
 	<!-- LDAP related fields -->
-	<bean id="shibboleth.authn.seedAttribute" class="java.lang.String" c:_0="carLicense" />
+	<bean id="shibboleth.authn.seedAttribute" class="java.lang.String" c:_0="description" />
 	<bean id="shibboleth.authn.userAttribute" class="java.lang.String" c:_0="uid" />
 
 	<!-- MongoDB related fields -->

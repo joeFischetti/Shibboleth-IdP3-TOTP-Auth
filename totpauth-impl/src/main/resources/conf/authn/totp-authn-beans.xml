@@ -17,7 +17,9 @@
 	<import resource="totp-authn-config.xml" />
 
 	<bean id="ExtractTotpFromForm" class="net.kvak.shibboleth.totpauth.authn.impl.ExtractTokenFromForm" scope="prototype"
-		p:httpServletRequest-ref="shibboleth.HttpServletRequest" p:tokenCodeField-ref="shibboleth.authn.tokenCodeField" />
+		p:httpServletRequest-ref="shibboleth.HttpServletRequest" 
+		p:tokenCodeField-ref="shibboleth.authn.tokenCodeField" 
+				/>
 
 	<bean id="TotpTokenValidator" class="net.kvak.shibboleth.totpauth.authn.impl.TotpTokenValidator" scope="prototype"
 		p:httpServletRequest-ref="shibboleth.HttpServletRequest" p:seedFetcher-ref="shibboleth.totp.seedfetcher" p:gAuth-ref="shibboleth.totp.gAuth" />
@@ -63,8 +65,15 @@
 	</bean>
 	-->
 	
-	<!-- For Dummy -->
+	<!-- For Dummy 
 	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.DummySeedFetcher"/>
-	
+	-->
+
+	<!-- For AttributeSourcedSeedFetcher -->
+	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.AttributeSourcedSeedFetcher"
+		p:attrRes-ref="shibboleth.AttributeResolverService">
+
+		<constructor-arg ref="shibboleth.authn.seedAttribute" />
+	</bean>
 
 </beans>

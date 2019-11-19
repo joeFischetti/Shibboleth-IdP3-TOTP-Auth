@@ -19,5 +19,10 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>${opensaml.groupId}</groupId>
+      <artifactId>opensaml-profile-api</artifactId>
+    </dependency>
+
   </dependencies>
 </project>

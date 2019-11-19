@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+import org.opensaml.profile.context.ProfileRequestContext;
+
+import javax.annotation.Nonnull;
 import net.kvak.shibboleth.totpauth.api.authn.SeedFetcher;
 import net.kvak.shibboleth.totpauth.api.authn.context.TokenUserContext;
 import net.kvak.shibboleth.totpauth.authn.impl.seed.MongoDB.MongoRepo;
@@ -25,7 +28,8 @@ public class MongoSeedFetcher implements SeedFetcher {
 	}
 
 	@Override
-	public void getSeed(String username, TokenUserContext tokenUserCtx) {
+	public void getSeed(String username, TokenUserContext tokenUserCtx, 
+			@Nonnull final ProfileRequestContext profileRequestContext) {
 		log.debug("Entering MongoDB getSeed with user {}", username);
 
 		//repository.save(new MongoUser("johnd", "G24YUKCHHXRDWCPR"));
@@ -49,5 +53,12 @@ public class MongoSeedFetcher implements SeedFetcher {
 			}
 		}
 	}
+
+
+	@Override
+	public void getSeed(String username, TokenUserContext tokenUserCtx, String logPrefix,
+			@Nonnull final ProfileRequestContext profileRequestContext){}
+
+
 
 }
