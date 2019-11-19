@@ -19,7 +19,7 @@ It will also assume the attribute is encrypted using a secret key (configured in
 
 TODO
 -----
-
+More detailed walkthrough on installation/configuration within mfa flow
 
 Requirements
 ------------
@@ -51,9 +51,14 @@ Directory structure:
 * Copy flows  --> $IDP-HOME/flows  
 * Copy views  --> $IDP-HOME/views  
 
-Modify $IDP_HOME/conf/idp.properties  
+Modify $IDP_HOME/conf/idp.properties:
 
-idp.authn.flows = Password --> idp.authn.flows = MFA
+add ", /conf/totpauthn.properties" to idp.additionalProperties= so it looks like:
+```idp.additionalProperties= /conf/ldap.properties, /conf/saml-nameid.properties...... , /conf/totpauthn.properties```
+
+And change the idp.authn.flows to point to the MFA flow:
+```idp.authn.flows = Password --> idp.authn.flows = MFA```
+
 
 Add TOTP bean to $IDP_HOME/conf/authn/general-authn.xml, to the element:
 ```
@@ -72,6 +77,13 @@ Add TOTP bean to $IDP_HOME/conf/authn/general-authn.xml, to the element:
             </property>
         </bean>
 ```
+And Add a bean to the MFA flow:
+```
+<bean parent="shibboleth.SAML2AuthnContextClassRef"
+                        c:classRef="urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken" />
+```
+
+And then within $IDP_HOME?conf/authn/mfa-authn-config.xml, you'll need to add a 'nextFlow= "authn/Totp"' somewhere
 
 ### Rebuild idp.war
 * run $IDP-HOME/bin/build.sh
@@ -80,27 +92,22 @@ Add TOTP bean to $IDP_HOME/conf/authn/general-authn.xml, to the element:
 
 Seed Fetching
 -------------
-From LDAP, MongoDB, SQL, File, REST, Dummy(static)
+From an AttributeResolver, which is the only way that really matters:
 
-### From LDAP - External LDAP (IDM?)
-With default settings this plugin fetches token seeds from the attribute called "carLicense" which is multivalued (user can have multiple tokens).  
-You can change the source attribute by editing bean "shibboleth.authn.seedAttribute" which is defined at totp-authn-config.xml.    
-    
-This plugin also assumes that your users unique userID is "uid" attribute.    
-This can be changed by editing bean "shibboleth.authn.userAttribute" at totp-authn-config.xml.  
+Within $IDP_HOME/conf/attribute-resolver.xml
+you'll want to create a new attribute definition that will reference the seed attribute.  The example source uses the "description" attribute.  That would look like the following:
 
-* Modify LDAP properties - totp-authn-beans.xml (url, userDn, password, base)  
-* Make sure that bean id "shibboleth.totp.seedfetcher" is pointing to "net.kvak.shibboleth.totpauth.authn.impl.seed.LdapSeedFetcher"  
+```
+        <AttributeDefinition xsi:type="Simple" id="description" sourceAttributeID="description">
+                <Dependency ref="myLDAP" />
+        </AttributeDefinition>
 
-### From MongoDB - Experimental, just testing, but it works
+``` 
 
-* Modify MongoDB properties - totp-authn-config.xml (mongoDbUrl, mongoDbName)  
-* Make sure that bean id "shibboleth.totp.seedfetcher" is pointing to "net.kvak.shibboleth.totpauth.authn.impl.seed.MongoSeedFetcher"  
+The attribute in your directory will need to match the following form:
+totpseed=(.......)
 
-### From Dummy - Static code
-
-* Make sure that bean id "shibboleth.totp.seedfetcher" is pointing to "net.kvak.shibboleth.totpauth.authn.impl.seed.DummySeedFetcher"
-* Register this token to your mobile device:  
+The helper below will generate the encrypted value that can be stored in the directory.
 
 Adding new seed to user
 ----------------------
