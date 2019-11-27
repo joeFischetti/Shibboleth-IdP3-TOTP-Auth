@@ -2,8 +2,8 @@
 [![Build Status](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth.svg?branch=master)](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth)
 
 # Shibboleth-IdP3-TOTP-Auth
-##This is a developement fork
-
+This is a developement fork
+Google authenticator authentication module for Shibboleth IdP v3. 
 
 ## Why use this plugin?
 MFA, or multi factor authentication, is used to provide additional security on top of standard password based authentication.  
@@ -41,20 +41,51 @@ A high level overview of how the plugin works is below.
 - Return pass/fail
 
 
+## How do I implement the plugin?
+The steps to use the plugin are as follows:
+- Download the source
+- run 'mvn clean package' to build it
+- unzip the built package and move the files to your $IDP-HOME directory
+- Set up your mfa-flow to call this (using some predefined criteria)
+- Test test test
 
 ## More technical details
-> Working example of the TOTP authenticator. Work in progress! Refactoring needed! Localization needed.  
-
-Google authenticator authentication module for Shibboleth IdP v3.  
-The original version used the password flow and then called the totp flow.  The updated version (this fork) relies on the MFA flow to call the password flow first.
+The original version of this plugin used the password flow and then called the totp flow.  The updated version (this fork) relies on the MFA flow to call the password flow first.
 This authn flow will take the c14n principal name and perform the token validation based on that.  This authn flow will not work by itself.
 
 
-"~~Uses External LDAP, MongoDB(EXPERIMENTAL!) or Static for seed fetching.~~"
 The original implementation of this authn flow had a separate ldap configuration.  This implementation will assume the totp seed is stored in a database that the attribute resolver has the ability to pull from.
-It will also assume the attribute is encrypted using a secret key (configured in a properties file).
+It will also assume the attribute is encrypted using a secret key (configured in a properties file). The attribute should be in the form of "totpseed=(ENCRYPTED VALUE)".  An example ldif might look something like:
 
+```
+# extended LDIF
+#
+# LDAPv3
+# base <o=base> (default) with scope subtree
+# filter: description=totp*
+# requesting: description
+#
 
+# 1234567, base
+dn: uniqueidentifier=1234567,o=base
+description: Some existing description value that may or may not take up more
+ than one line
+description: totpseed=(ANENCRYPTEDSEEDVALUETHATWILLBEUSEDBYTHEIDP)
+
+# 1234568, base
+dn: uniqueidentifier=1234568,o=base
+description: Some existing description
+description: totpseed=(ANENCRYPTEDSEEDVALUETHATWILLBEUSEDBYTHEIDP)
+
+# search result
+search: 2
+result: 0 Success
+
+# numResponses: 3
+# numEntries: 2
+```
+
+There's a helper application that can handle the creation of these keys in [EncryptionHelpers].  Details are below
 
 TODO
 -----
@@ -63,8 +94,11 @@ More detailed walkthrough on installation/configuration within mfa flow
 Requirements
 ------------
 
-Shibboleth IdP v3.4.5
-Java 8
+- Shibboleth IdP v3.4.5
+- Java 8
+- Slightly more than a basic understanding of identity management
+- Some way to insert encrypted seeds into a directory.
+
 
 Installing
 ----------
@@ -93,10 +127,11 @@ Directory structure:
 Modify $IDP_HOME/conf/idp.properties:
 
 add ", /conf/totpauthn.properties" to idp.additionalProperties= so it looks like:
-```idp.additionalProperties= /conf/ldap.properties, /conf/saml-nameid.properties...... , /conf/totpauthn.properties```
+```idp.additionalProperties= /conf/ldap.properties, /conf/saml-nameid.properties...... , /conf/totpauthn.properties
+
 
 And change the idp.authn.flows to point to the MFA flow:
-```idp.authn.flows = Password --> idp.authn.flows = MFA```
+```idp.authn.flows = Password --> idp.authn.flows = MFA
 
 
 Add TOTP bean to $IDP_HOME/conf/authn/general-authn.xml, to the element:
@@ -152,8 +187,6 @@ The helper below will generate the encrypted value that can be stored in the dir
 
 Adding new seed to user
 ----------------------
-
-"~~At the moment you need to add your token codes to the repository with external process. I will create some kind of registeration flow to the IdP.~~"
 
 I have no plans to impelement a registration process within the IdP for the seed.  This can (and should?) be handled elsewhere/via some outside process.  The IdP should be used for login events, not account management.
 
