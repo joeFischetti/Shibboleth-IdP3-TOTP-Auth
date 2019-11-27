@@ -1,10 +1,11 @@
 [![Apache License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Build Status](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth.svg?branch=master)](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth)
 
-# THIS IS A DEVELEOPMENT FORK
-#Shibboleth-IdP3-TOTP-Auth
+# Shibboleth-IdP3-TOTP-Auth
+##This is a developement fork
 
-# Why use this plugin?
+
+## Why use this plugin?
 MFA, or multi factor authentication, is used to provide additional security on top of standard password based authentication.  
 The [obvious] problem with password-only authentication is that when a password for an account is compromised, that account is compromised.  
 MFA introduces additional factors on top of the password (something you know), typically in the form of "something you have" or "something you are".
@@ -18,7 +19,7 @@ In addition to spreading out the management footprint and introducing this depen
 
 That said, no MFA is perfect and it can be a pain in the ass for the users.
 
-# What does this plugin do?
+## What does this plugin do?
 This plugin hooks into the built in MFA flows within the Shibboleth IDP to provide support for a totp.  
 It's was developed as a fork to the original plugin by [].  
 Details are below, but in short, that plugin didn't work with current versions of the idp for a number of reasons:
@@ -29,7 +30,7 @@ Details are below, but in short, that plugin didn't work with current versions o
 - Made external connections to the token databases on it's own (instead of relying on internal IdP mechanisms)
 
 
-# How does this plugin work?
+## How does this plugin work?
 A high level overview of how the plugin works is below.
 - Using the built-in MFA flow, call this plugin as the 'nextFlow'
 - Get the user's principle name for the session
@@ -41,7 +42,7 @@ A high level overview of how the plugin works is below.
 
 
 
-# More technical details
+## More technical details
 > Working example of the TOTP authenticator. Work in progress! Refactoring needed! Localization needed.  
 
 Google authenticator authentication module for Shibboleth IdP v3.  
