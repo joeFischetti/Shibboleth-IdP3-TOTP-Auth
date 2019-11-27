@@ -18,6 +18,6 @@ target/
 ./*.sh
 
 #unzipped files
-./totpauth-impl-*
+totpauth-impl-.*
 
 EncryptionHelpers/bin
