@@ -197,11 +197,15 @@ I have no plans to impelement a registration process within the IdP for the seed
 That said, there's a helper application in EncryptionHelpers that will generate 16character strings that can be used as seeds, along with an encrypted value for insertion into the database.  The key used for encryption is hardcoded.  In addition, it will also print out a url which can be used as input for a QR code generator.
 
 You can build the helper:
+```
 cd EncryptionHelpers
 ./build.sh
+```
 
 And run it with:
+```
 ./run.sh
+```
 
 Afterwards, run something like the following:
-qrencode -o '/path/to/png/outputfile' -s6 'otpauth://totp/Shibboleth?secret=SOMTHING'
+```qrencode -o '/path/to/png/outputfile' -s6 'otpauth://totp/Shibboleth?secret=SOMTHING'```
