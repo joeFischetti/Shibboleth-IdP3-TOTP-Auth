@@ -1,0 +1,6 @@
+#binaries
+./bin
+
+#properties file
+./keys.properties
+
