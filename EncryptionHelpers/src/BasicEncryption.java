@@ -15,7 +15,7 @@ private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
 public static void main(String args[]) throws Exception{
 
-	String plaintext;
+	String plaintext, encryptedSeed, oldkey, newkey, argument;
 
 	if(args.length == 0){
 		System.err.println("No seed provided, generating a new one");
@@ -24,9 +24,36 @@ public static void main(String args[]) throws Exception{
 		plaintext = generateKey2();
 	}
 	else{
+		encryptedSeed = new String();
+		oldkey = new String();
+		newkey = new String();
 
-		System.err.println("New seed provided as argument:  " + args[0]);
-		plaintext = new String(args[0]);
+
+		for(int i = 0; i < args.length; i++){
+			argument = args[i].toLowerCase();
+			if(argument.indexOf("--") == 0){
+				System.out.println("Processing: " + argument.substring(2));
+				switch(argument.substring(2)){
+					case "encryptedseed":
+						encryptedSeed = args[i+1];
+						System.out.println("Encrypted Seed provided:  " + encryptedSeed);
+						break;
+					case "oldkey":
+						oldkey = args[i+1];
+						System.out.println("Old Key Provided: " + oldkey);
+						break;
+					case "newkey":
+						newkey = args[i+1];
+						System.out.println("New Key Privided: " + newkey);
+						break;
+				}
+			}
+		}
+
+
+		//System.err.println("New seed provided as argument:  " + args[0]);
+		//plaintext = new String(args[0]);
+		plaintext = generateKey2();
 	}
 	
 	System.err.println("The plaintext (for the client device):  " + plaintext);
