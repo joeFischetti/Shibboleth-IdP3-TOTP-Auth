@@ -15,6 +15,9 @@ target/
 .jar
 
 #shell
-.sh
+*.sh
+
+#unzipped files
+./totpauth-impl-*
 
 EncryptionHelpers/bin
