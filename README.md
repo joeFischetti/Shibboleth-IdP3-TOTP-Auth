@@ -127,11 +127,15 @@ Directory structure:
 Modify $IDP_HOME/conf/idp.properties:
 
 add ", /conf/totpauthn.properties" to idp.additionalProperties= so it looks like:
-```idp.additionalProperties= /conf/ldap.properties, /conf/saml-nameid.properties...... , /conf/totpauthn.properties
+```
+idp.additionalProperties= /conf/ldap.properties, /conf/saml-nameid.properties...... , /conf/totpauthn.properties
+```
 
 
 And change the idp.authn.flows to point to the MFA flow:
-```idp.authn.flows = Password --> idp.authn.flows = MFA
+```
+idp.authn.flows = Password --> idp.authn.flows = MFA
+```
 
 
 Add TOTP bean to $IDP_HOME/conf/authn/general-authn.xml, to the element:
