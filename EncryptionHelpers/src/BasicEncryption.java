@@ -22,54 +22,56 @@ public static void main(String args[]) throws Exception{
 		//generateKey2();
 		//plaintext = "G24YUKCHHXRDWCPR";
 		plaintext = generateKey2();
+
+
+		System.err.println("The plaintext (for the client device):  " + plaintext);
+		String cipherText = encrypt2(plaintext, "somerandomkey");
+		System.err.println("The ciphertext (store in the directory): totpseed=(" + cipherText + ")");
+		System.err.println("The plaintext  (to verify decryption):  " + decrypt2(cipherText, "somerandomkey"));
+		System.out.println("otpauth://totp/Shibboleth?secret=" + plaintext);
+
+
 	}
 	else{
 		encryptedSeed = new String();
 		oldkey = new String();
 		newkey = new String();
-
+		boolean quiet = false;
 
 		for(int i = 0; i < args.length; i++){
 			argument = args[i].toLowerCase();
 			if(argument.indexOf("--") == 0){
-				System.out.println("Processing: " + argument.substring(2));
+				//System.out.println("Processing: " + argument.substring(2));
 				switch(argument.substring(2)){
 					case "encryptedseed":
 						encryptedSeed = args[i+1];
-						System.out.println("Encrypted Seed provided:  " + encryptedSeed);
+						//System.out.println("Encrypted Seed provided:  " + encryptedSeed);
 						break;
 					case "oldkey":
 						oldkey = args[i+1];
-						System.out.println("Old Key Provided: " + oldkey);
+						//System.out.println("Old Key Provided: " + oldkey);
 						break;
 					case "newkey":
 						newkey = args[i+1];
-						System.out.println("New Key Privided: " + newkey);
+						//System.out.println("New Key Privided: " + newkey);
 						break;
+					case "quiet":
+						quiet = true;
 				}
 			}
 		}
 
-
-		//System.err.println("New seed provided as argument:  " + args[0]);
-		//plaintext = new String(args[0]);
-		plaintext = generateKey2();
+		plaintext = decrypt2(encryptedSeed, oldkey);
+		String newCipher = encrypt2(plaintext, newkey);
+		if(!quiet){
+			System.out.println("Old Key (plain): " + plaintext);
+			System.out.println("New key (cipher): " + newCipher);
+		}
+		else{
+			System.out.println(newCipher);
+		}
 	}
 	
-	System.err.println("The plaintext (for the client device):  " + plaintext);
-
-	String cipherText = encrypt2(plaintext, "somerandomkey");
-
-	//System.out.println("The ciphertext:  " + ASCIItoHEX(cipherText));
-	System.err.println("The ciphertext (store in the directory): totpseed=(" + cipherText + ")");
-
-	//String ct = "FE599E8D0E176594181B4326EBDB84307E83056FB0668CC6";
-
-	//System.out.println("The ciphertext: " + HEXtoASCII(ct));
-	System.err.println("The plaintext  (to verify decryption):  " + decrypt2(cipherText, "somerandomkey"));
-
-	System.out.println("otpauth://totp/Shibboleth?secret=" + plaintext);
-
 }
 
 public static String encrypt2(String plaintext, String strkey) throws Exception{
