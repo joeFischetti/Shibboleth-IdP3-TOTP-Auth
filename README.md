@@ -5,7 +5,7 @@
 #Shibboleth-IdP3-TOTP-Auth
 
 # Why use this plugin?
-> MFA, or multi factor authentication, is used to provide additional security on top of standard password based authentication.  
+MFA, or multi factor authentication, is used to provide additional security on top of standard password based authentication.  
 The [obvious] problem with password-only authentication is that when a password for an account is compromised, that account is compromised.  
 MFA introduces additional factors on top of the password (something you know), typically in the form of "something you have" or "something you are".
 
@@ -14,7 +14,7 @@ This plugin implements MFA using "something you have", or more specifically, a t
 The major downside with some of the other impelementations for MFA (such as Duo), is the reliance on an outside service for authentication.
 In addition to spreading out the management footprint and introducing this dependency
 - Duo supports push notifications which are a known attack attack vector.
-..- TOTP keys are "pulled".  i.e. the user needs to look at it and provide it.  There's no chance they'll passively click a notification.
+- TOTP keys are "pulled".  i.e. the user needs to look at it and provide it.  There's no chance they'll passively click a notification.
 
 That said, no MFA is perfect and it can be a pain in the ass for the users.
 
