@@ -31,7 +31,7 @@ Installing
 ----------
 
 * Compile souce code with maven - ```mvn clean package```
-* Copy and extract totpauth-parent/totpauth-impl/target/totpauth-impl-0.5.1-bin.zip
+* Copy and extract totpauth-parent/totpauth-impl/target/totpauth-impl-1.0-bin.zip
 
 Directory structure:
 <pre>
