@@ -86,6 +86,8 @@ And Add a bean to the MFA flow:
 And then within $IDP_HOME?conf/authn/mfa-authn-config.xml, you'll need to add a 'nextFlow= "authn/Totp"' somewhere
 
 ### Rebuild idp.war
+* Make sure you've removed any old versions of the totpauth-impl or totpauth-api libraries in $IDP-HOME/bin/build.sh
+** Only necessary if you've deployed versions other than the current
 * run $IDP-HOME/bin/build.sh
 * If you need, move that war-file to containers "webapps" directory (tomcat, jetty, etc)
 * Restart container

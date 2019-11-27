@@ -38,12 +38,13 @@ public class TokenUserContext extends BaseContext {
 		  return "Invalid Token Code. Try again.";
 	  }
 	return "";
-}
 
-public void setErrorMessage(String errorMessage) {
-}
+  }
 
-public String getTotpUrl() {
+  public void setErrorMessage(String errorMessage) {
+  }
+
+  public String getTotpUrl() {
     return totpUrl;
   }
 
@@ -61,8 +62,19 @@ public String getTotpUrl() {
 
   private AuthState state = AuthState.OK;
 
+  //A counter for the numbers of times the user has failed auth in this context
+  private int failedAuth = 0;
+
   public AuthState getState() {
     return state;
+  }
+
+  public void failedAttempt() {
+    failedAuth++;
+  }
+
+  public int getFailedAttempts(){
+    return failedAuth;
   }
 
   public void setState(AuthState state) {

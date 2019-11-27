@@ -72,7 +72,7 @@ public class ExtractTokenFromForm extends AbstractExtractionAction {
 			TokenUserContext tokenCtx = authenticationContext.getSubcontext(TokenUserContext.class, true);
 
 			/** get tokencode from request **/
-			String value = StringSupport.trimOrNull(request.getParameter(tokenCodeField));
+			String value = StringSupport.trimOrNull(request.getParameter(tokenCodeField).replaceAll("\\s+",""));
 
 			if (!StringUtils.isNumeric(value) || Strings.isNullOrEmpty(value)) {
 				log.debug("{} Empty or invalid tokenCode", getLogPrefix());

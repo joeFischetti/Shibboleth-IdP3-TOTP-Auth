@@ -163,6 +163,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 
 			else{
 				log.info("{} Failed to get tokenCtx state", getLogPrefix());
+				log.info("{} Failed login attempts", getLogPrefix(), tokenCtx.getFailedAttempts());
 			}
 
 			//If the user hasn't registered for a token, we should print something out to the page
@@ -176,8 +177,10 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 
 			//If we got this far and result is false, it means they didn't auth
 			if (!result) {
-				log.info("{} Token authentication failed for user: {}", getLogPrefix(), username);
-				tokenCtx.setState(AuthState.CANT_VALIDATE);
+				log.info("{} Token Authentication failed for user: {}", getLogPrefix(), username);
+				//tokenCtx.setState(AuthState.CANT_VALIDATE);
+				tokenCtx.failedAttempt();
+				log.info("{} User failed {} times", getLogPrefix(), tokenCtx.getFailedAttempts());
 				handleError(profileRequestContext, authenticationContext, "InvalidCredentials",
 						AuthnEventIds.INVALID_CREDENTIALS);
 				return;
