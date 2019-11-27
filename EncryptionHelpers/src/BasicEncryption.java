@@ -97,44 +97,9 @@ public static String decrypt2(String ciphertext, String strkey) throws Exception
 
 }	
 
-public static byte[] encrypt(String strClearText,String strKey) throws Exception{
-	String strData="";
-	byte[] encrypted;
-	
-	try {
-		SecretKeySpec skeyspec=new SecretKeySpec(strKey.getBytes(),"Blowfish");
-		Cipher cipher=Cipher.getInstance("Blowfish");
-		cipher.init(Cipher.ENCRYPT_MODE, skeyspec);
-		 encrypted=cipher.doFinal(strClearText.getBytes());
-		strData=new String(encrypted);
-		//strData = bytesToHex(encrypted);
-		
-	} catch (Exception e) {
-		e.printStackTrace();
-		throw new Exception(e);
-	}
-	return encrypted;
-}
 
 
 
-public static String decrypt(String strEncrypted,String strKey) throws Exception{
-	String strData="";
-	
-	try {
-		SecretKeySpec skeyspec=new SecretKeySpec(strKey.getBytes(),"Blowfish");
-		Cipher cipher=Cipher.getInstance("Blowfish");
-		cipher.init(Cipher.DECRYPT_MODE, skeyspec);
-		byte[] decrypted=cipher.doFinal(strEncrypted.getBytes());
-		strData=new String(decrypted);
-		//strData = bytesToHex(decrypted);
-		
-	} catch (Exception e) {
-		e.printStackTrace();
-		throw new Exception(e);
-	}
-	return strData;
-}
 public static byte[] hexToBytes(String s) {
                 int len = s.length();
                 byte[] data = new byte[len/2];
