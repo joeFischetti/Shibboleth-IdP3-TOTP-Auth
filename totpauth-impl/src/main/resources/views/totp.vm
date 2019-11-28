@@ -1,6 +1,6 @@
 #set ($rpContext = $profileRequestContext.getSubcontext('net.shibboleth.idp.profile.context.RelyingPartyContext'))
 #set ($userName = $authenticationContext.getSubcontext('net.shibboleth.idp.authn.context.UsernamePasswordContext', true).getUsername())
-#set ($errorMessage = $authenticationContext.getSubcontext('net.kvak.shibboleth.totpauth.api.authn.context.TokenUserContext').getErrorMessage())
+#set ($errorMessage = $authenticationContext.getSubcontext('live.pinger.shibboleth.totpauth.api.authn.context.TokenUserContext').getErrorMessage())
 ##
 <!DOCTYPE html>
 <html>

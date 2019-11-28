@@ -3,7 +3,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>net.kvak.shibboleth</groupId>
+		<groupId>live.pinger.shibboleth</groupId>
 		<artifactId>totpauth-parent</artifactId>
 		<version>1.0</version>
 	</parent>
@@ -24,7 +24,7 @@
 
 		<!-- Compile Dependencies -->
 		<dependency>
-			<groupId>net.kvak.shibboleth</groupId>
+			<groupId>live.pinger.shibboleth</groupId>
 			<artifactId>totpauth-api</artifactId>
 		</dependency>
 		<dependency>
@@ -180,7 +180,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeGroupIds>net.kvak.shibboleth,org.apache.commons,com.warrenstrange,com.google.code.gson,org.springframework.ldap,org.springframework.data,com.mongodb,org.mongodb</includeGroupIds>
+							<includeGroupIds>live.pinger.shibboleth,org.apache.commons,com.warrenstrange,com.google.code.gson,org.springframework.ldap,org.springframework.data,com.mongodb,org.mongodb</includeGroupIds>
 						</configuration>
 					</execution>
 				</executions>

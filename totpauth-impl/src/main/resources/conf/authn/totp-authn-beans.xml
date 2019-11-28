@@ -18,12 +18,12 @@
 
 
 
-	<bean id="ExtractTotpFromForm" class="net.kvak.shibboleth.totpauth.authn.impl.ExtractTokenFromForm" scope="prototype"
+	<bean id="ExtractTotpFromForm" class="live.pinger.shibboleth.totpauth.authn.impl.ExtractTokenFromForm" scope="prototype"
 		p:httpServletRequest-ref="shibboleth.HttpServletRequest" 
 		p:tokenCodeField="%{totpauthn.tokenCodeField}" 
 				/>
 
-	<bean id="TotpTokenValidator" class="net.kvak.shibboleth.totpauth.authn.impl.TotpTokenValidator" scope="prototype"
+	<bean id="TotpTokenValidator" class="live.pinger.shibboleth.totpauth.authn.impl.TotpTokenValidator" scope="prototype"
 		p:httpServletRequest-ref="shibboleth.HttpServletRequest" p:seedFetcher-ref="shibboleth.totp.seedfetcher" p:gAuth-ref="shibboleth.totp.gAuth" />
         
 <!--
@@ -39,7 +39,7 @@
 	</bean>
 -->
 	<!-- For LDAP -->
-<!--	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.LdapSeedFetcher">
+<!--	<bean id="shibboleth.totp.seedfetcher" class="live.pinger.shibboleth.totpauth.authn.impl.seed.LdapSeedFetcher">
 		<constructor-arg ref="shibboleth.authn.seedAttribute" />
 		<constructor-arg ref="shibboleth.authn.userAttribute" />
 		<property name="ldapTemplate" ref="ldapTemplate" />
@@ -47,11 +47,11 @@
 -->
 
 	<!-- For Dummy 
-	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.DummySeedFetcher"/>
+	<bean id="shibboleth.totp.seedfetcher" class="live.pinger.shibboleth.totpauth.authn.impl.seed.DummySeedFetcher"/>
 	-->
 
 	<!-- For AttributeSourcedSeedFetcher -->
-	<bean id="shibboleth.totp.seedfetcher" class="net.kvak.shibboleth.totpauth.authn.impl.seed.AttributeSourcedSeedFetcher"
+	<bean id="shibboleth.totp.seedfetcher" class="live.pinger.shibboleth.totpauth.authn.impl.seed.AttributeSourcedSeedFetcher"
 		p:attrRes-ref="shibboleth.AttributeResolverService"
 		p:encryptionKey="%{totpauthn.encryptionKey}"
 		p:seedAttribute="%{totpauthn.seedAttribute}"/>

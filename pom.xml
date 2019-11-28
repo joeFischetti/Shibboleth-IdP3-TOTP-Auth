@@ -7,7 +7,7 @@
 		<artifactId>idp-parent</artifactId>
 		<version>3.3.0</version>
 	</parent>
-	<groupId>net.kvak.shibboleth</groupId>
+	<groupId>live.pinger.shibboleth</groupId>
 	<artifactId>totpauth-parent</artifactId>
 	<version>1.0</version>
 	<packaging>pom</packaging>
@@ -60,7 +60,7 @@
 		<dependencies>
 			<!-- Compile Dependencies -->
 			<dependency>
-				<groupId>net.kvak.shibboleth</groupId>
+				<groupId>live.pinger.shibboleth</groupId>
 				<artifactId>totpauth-api</artifactId>
 				<version>${mobile.auth.version}</version>
 			</dependency>
