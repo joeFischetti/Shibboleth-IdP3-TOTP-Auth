@@ -1,4 +1,4 @@
-package helper;
+package live.pinger.shibboleth.helper;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher;

@@ -56,7 +56,7 @@ for line in fixedLinesLdif.split("\n"):
     continue
   if re.match('^description: totpseed=(.*)', line):
     encryptedSeed = line[line.index("(")+1:-1]
-    newSeed = os.popen('java -cp ./libs/commons-lang3-3.9.jar:./bin helper.BasicEncryption --quiet --encryptedSEED ' + encryptedSeed  + ' --newkey ' + properties['newKey'] + ' --oldkey ' + properties['oldKey']).read()
+    newSeed = os.popen('java -cp ./libs/commons-lang3-3.9.jar:./bin live.pinger.shibboleth.helper.BasicEncryption --quiet --encryptedSEED ' + encryptedSeed  + ' --newkey ' + properties['newKey'] + ' --oldkey ' + properties['oldKey']).read()
 
     print(newSeed)
     if not newSeed:
