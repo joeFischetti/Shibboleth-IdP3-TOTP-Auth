@@ -1,5 +1,5 @@
 #binaries
-./bin
+./bin/*
 
 #properties file
 keys.properties

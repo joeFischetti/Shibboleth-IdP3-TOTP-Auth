@@ -20,4 +20,4 @@ target/
 #unzipped files
 totpauth-impl-*
 
-EncryptionHelpers/bin
+EncryptionHelpers/bin/*
