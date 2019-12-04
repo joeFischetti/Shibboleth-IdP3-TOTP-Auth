@@ -6,7 +6,8 @@ import java.util.Map;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher;
 
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import live.pinger.shibboleth.totpauth.api.authn.SeedFetcher;
 import live.pinger.shibboleth.totpauth.api.authn.context.TokenUserContext;
 import org.opensaml.profile.context.ProfileRequestContext;
@@ -94,11 +95,8 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 				//If the attribute contains our tag (totpseed=(...))
 				if( attribute.getValues().get(i).getDisplayValue().indexOf("totpseed") != -1){
 
-					//Get the length of the value, for substring purposes
-					int seedFieldLength = attribute.getValues().get(i).getDisplayValue().length() - 1;
-
 					//seedEncrypted is everything between the (...) after totpseed
-					String seedEncrypted = attribute.getValues().get(i).getDisplayValue().substring(10,seedFieldLength);
+					String seedEncrypted = extractSeed(attribute.getValues().get(i).getDisplayValue());
 
 					//Log output that we found it
 					log.info("{} Found seed (encrypted) value:  {}", logPrefix, seedEncrypted);
@@ -180,6 +178,26 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 		return data;
 	}
 
+	//Function to extract the seed from the attribute that was passed in
+	private String extractSeed(String input){
+		//build a pattern to use for matching the seed
+		String pattern = "(.*)totpseed=\\((.*?)\\)(.*)";
+		Pattern r = Pattern.compile(pattern);
+
+		//Matcher for the pattern to the input
+		Matcher m = r.matcher(input);
+
+
+		//Find the pattern in the input, and return the second capture group
+		// Which based on our pattern, is the totpseed
+		if(m.find( )){
+			return m.group(2);
+		}
+
+		else{
+			return "NoSeed";
+		}
+	}
 
 
 }
