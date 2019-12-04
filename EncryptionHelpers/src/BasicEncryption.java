@@ -6,16 +6,20 @@ import javax.crypto.KeyGenerator;
 import java.security.SecureRandom;
 import java.security.Key;
 import org.apache.commons.lang3.RandomStringUtils;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 
 
 public class BasicEncryption{
 
 private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+private static GoogleAuthenticator gAuth;
+
 
 
 public static void main(String args[]) throws Exception{
 
 	String plaintext, encryptedSeed, oldkey, newkey, argument;
+	int token;
 
 	if(args.length == 0){
 		System.err.println("No seed provided, generating a new one");
@@ -36,7 +40,12 @@ public static void main(String args[]) throws Exception{
 		encryptedSeed = new String();
 		oldkey = new String();
 		newkey = new String();
+		plaintext = new String();
+		token = 0;
 		boolean quiet = false;
+		boolean tokenValidate = false;
+
+		gAuth = new GoogleAuthenticator();
 
 		for(int i = 0; i < args.length; i++){
 			argument = args[i].toLowerCase();
@@ -57,15 +66,43 @@ public static void main(String args[]) throws Exception{
 						break;
 					case "quiet":
 						quiet = true;
+						break;
+					case "tokenvalidate":
+						tokenValidate = true;
+						break;
+					case "seed":
+						plaintext = args[i+1];
+						break;
+					case "token":
+						token = Integer.parseInt(args[i+1]);
+						break;
 				}
 			}
 		}
 
-		plaintext = decrypt2(encryptedSeed, oldkey);
+		if(tokenValidate){
+			if(validateToken(plaintext,token)){
+				System.out.println("true");
+			}
+			else{
+				System.out.println("false");
+			}
+			return;
+		}
+
+		if(encryptedSeed.equals("")){
+			//System.out.println("No encrypted seed provided, generating new seed");
+			plaintext = generateKey2();
+		}
+		else{
+			plaintext = decrypt2(encryptedSeed, oldkey);
+		}
+		
 		String newCipher = encrypt2(plaintext, newkey);
+		
 		if(!quiet){
-			System.out.println("Old Key (plain): " + plaintext);
-			System.out.println("New key (cipher): " + newCipher);
+			System.out.println(plaintext);
+			System.out.println("totpseed=(" + newCipher + ")");
 		}
 		else{
 			System.out.println(newCipher);
@@ -97,8 +134,13 @@ public static String decrypt2(String ciphertext, String strkey) throws Exception
 
 }	
 
-
-
+public static boolean validateToken(String seed, int token) {
+	System.out.println("seed: " + seed + " and token: " + token);
+	if (seed.length() == 16) {
+		return gAuth.authorize(seed, token);
+	}
+	return false;
+}
 
 public static byte[] hexToBytes(String s) {
                 int len = s.length();
