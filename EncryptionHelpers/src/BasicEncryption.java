@@ -83,6 +83,9 @@ public static void main(String args[]) throws Exception{
 		if(tokenValidate){
 			if(validateToken(plaintext,token)){
 				System.out.println("true");
+				if(!newkey.equals("")){
+					System.out.println("totpseed=(" + encrypt2(plaintext,newkey) + ")");
+				}
 			}
 			else{
 				System.out.println("false");
