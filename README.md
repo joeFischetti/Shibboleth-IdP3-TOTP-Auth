@@ -2,7 +2,6 @@
 [![Build Status](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth.svg?branch=master)](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth)
 
 # Shibboleth-IdP3-TOTP-Auth
-This is a developement fork
 Google authenticator authentication module for Shibboleth IdP v3. 
 
 ## Why use this plugin?
