@@ -89,7 +89,8 @@ There's a helper application that can handle the creation of these keys in [Encr
 
 TODO
 -----
-More detailed walkthrough on installation/configuration within mfa flow
+- More detailed walkthrough on installation/configuration within mfa flow
+- Troubleshoot/identify issues while running with oracle java instead of openjdk
 
 Requirements
 ------------

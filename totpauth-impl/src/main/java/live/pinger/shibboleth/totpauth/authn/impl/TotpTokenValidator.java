@@ -116,7 +116,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 			@Nonnull final AuthenticationContext authenticationContext) {
 
 		//log output
-		log.info("{} Entering totpValidator for username: {}", getLogPrefix(),username);
+		log.debug("{} Entering totpValidator for username: {}", getLogPrefix(),username);
 
 
 		try {
@@ -125,7 +125,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 			TokenUserContext tokenCtx = authenticationContext.getSubcontext(TokenUserContext.class, true);
 
 
-			log.info("{} Validating for user:  {}", getLogPrefix(), username);
+			log.debug("{} Validating for user:  {}", getLogPrefix(), username);
 
 			//Fetch the seed(s) using the configured method
 			//	Pass in the username, tokenCtx, logPrefix, and profileRequestContext (for attribute resolution)
@@ -138,7 +138,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 			if (tokenCtx.getState() == AuthState.OK) {
 
 				//Debug output only
-				log.info("{} Validating user: {} seeds:  {} against seed", getLogPrefix(), username, tokenCtx.getTokenSeed());
+				log.debug("{} Validating user: {} seeds:  {} against seed", getLogPrefix(), username, tokenCtx.getTokenSeed());
 				
 				//Get seeds from tokenUserContext
 				ArrayList<String> seeds = tokenCtx.getTokenSeed();
@@ -198,13 +198,13 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 	//Validate the token using gauth
 	@Override
 	public boolean validateToken(String seed, int token) {
-		log.info("{} Entering validatetoken", getLogPrefix());
+		log.debug("{} Entering validatetoken", getLogPrefix());
 
 		if (seed.length() == 16) {
-			log.info("{} authorize {} - {} ", getLogPrefix(), seed, token);
+			log.debug("{} authorize {} - {} ", getLogPrefix(), seed, token);
 			return gAuth.authorize(seed, token);
 		}
-		log.info("{} Token code validation failed. Seed is not 16 char long", getLogPrefix());
+		log.debug("{} Token code validation failed. Seed is not 16 char long", getLogPrefix());
 		return false;
 	}
 
@@ -213,9 +213,9 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 	//CanonicalUsernameLookupStrategy that we ran first
 	@Override
 	protected Subject populateSubject(Subject subject) {
-		log.info("{} TokenValidator populateSubject is called", getLogPrefix());		
+		log.debug("{} TokenValidator populateSubject is called", getLogPrefix());		
 		if (StringSupport.trimOrNull(username) != null) {
-			log.info("{} Populate subject {}", getLogPrefix(), username);
+			log.debug("{} Populate subject {}", getLogPrefix(), username);
 			subject.getPrincipals().add(new UsernamePrincipal(username));
 			return subject;
 		}

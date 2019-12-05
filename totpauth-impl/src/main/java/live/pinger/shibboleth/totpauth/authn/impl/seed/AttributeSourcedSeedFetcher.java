@@ -64,8 +64,8 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 		resCtx.setPrincipal(username);
 
 		//Log output	
-		log.info("{} Performing attribute resolution for user {}", logPrefix, username);
-		log.info("{} Looking for attribute defined in xml:  {}", logPrefix, seedAttribute);
+		log.debug("{} Performing attribute resolution for user {}", logPrefix, username);
+		log.debug("{} Looking for attribute defined in xml:  {}", logPrefix, seedAttribute);
 
 		//The resolver needs to receive an arraylist of values to look up.  Put the attrname
 		//	into an arraylist, and pass that to the resolver
@@ -90,7 +90,7 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 			for(int i = 0; i < attribute.getValues().size(); i++){
 
 				//Log output for debugging
-				log.info("{} Attribute Value found:  {}", logPrefix, attribute.getValues().get(i).getDisplayValue());
+				log.debug("{} Attribute Value found:  {}", logPrefix, attribute.getValues().get(i).getDisplayValue());
 
 				//If the attribute contains our tag (totpseed=(...))
 				if( attribute.getValues().get(i).getDisplayValue().indexOf("totpseed") != -1){
@@ -99,12 +99,12 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 					String seedEncrypted = extractSeed(attribute.getValues().get(i).getDisplayValue());
 
 					//Log output that we found it
-					log.info("{} Found seed (encrypted) value:  {}", logPrefix, seedEncrypted);
+					log.debug("{} Found seed (encrypted) value:  {}", logPrefix, seedEncrypted);
 
 					//Try to decrypt the seed using the encryption key from the config file
 					try{
 						//Debugging output
-						log.info("{} Unencrypted Seed Value  {}", logPrefix, decrypt2(seedEncrypted, encryptionKey));
+						log.debug("{} Unencrypted Seed Value  {}", logPrefix, decrypt2(seedEncrypted, encryptionKey));
 
 						//Set the tokenUserCtx token seed to the decrypted seed.
 						tokenUserCtx.setTokenSeed(decrypt2(seedEncrypted, encryptionKey));
@@ -120,7 +120,7 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 
 		else{
 			//Log output
-			log.info("{} No attributes found in local variable", logPrefix);
+			log.debug("{} No attributes found in local variable", logPrefix);
 		}
 
 		//Unpin the attribute resolver so it can be used again
