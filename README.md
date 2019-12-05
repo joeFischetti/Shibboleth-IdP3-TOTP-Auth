@@ -91,6 +91,8 @@ TODO
 -----
 - More detailed walkthrough on installation/configuration within mfa flow
 - Troubleshoot/identify issues while running with oracle java instead of openjdk
+	It's related to the key sizes used in oracle java... the key's i've used require the "unlimited strength" policy
+	Details can be found [https://www.andreafortuna.org/2016/06/08/java-tips-how-to-fix-the-invalidkeyexception-illegal-key-size-or-default-parameters-runtime/]
 
 Requirements
 ------------

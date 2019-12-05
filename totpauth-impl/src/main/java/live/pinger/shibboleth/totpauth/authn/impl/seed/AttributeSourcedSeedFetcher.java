@@ -112,7 +112,7 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 
 					//Handle a failure to decrypt key
 					catch(Exception e){
-						//Implement
+						log.debug("{} Error while decrypting seed value: {}", logPrefix, e);
 					}
 				}
 			}
