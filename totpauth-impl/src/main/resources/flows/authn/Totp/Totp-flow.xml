@@ -20,7 +20,6 @@
 				expression="flowRequestContext.getActiveFlow().getApplicationContext().containsBean('shibboleth.CustomViewContext') ? flowRequestContext.getActiveFlow().getApplicationContext().getBean('shibboleth.CustomViewContext') : null"
 				result="viewScope.custom" />
 		</on-render>
-
 		<transition on="proceed" to="ExtractTotpFromForm" />
 	</view-state>
 

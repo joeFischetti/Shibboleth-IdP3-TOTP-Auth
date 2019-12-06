@@ -167,6 +167,99 @@ And Add a bean to the MFA flow:
 
 And then within $IDP_HOME?conf/authn/mfa-authn-config.xml, you'll need to add a 'nextFlow= "authn/Totp"' somewhere
 
+An example of an mfa-authn-config.xml that would call the authn/Totp based on membership in a particular goup in ldap is below.
+You should modify the script as necessary.
+```
+    <util:map id="shibboleth.authn.MFA.TransitionMap">
+        <!-- First rule runs the Password login flow. -->
+        <entry key="">
+            <bean parent="shibboleth.authn.MFA.Transition" p:nextFlow="authn/Password" />
+        </entry>
+
+        <!--
+        Second rule runs a function if Password succeeds, to determine whether an additional
+        factor is required.
+        -->
+        <entry key="authn/Password">
+            <bean parent="shibboleth.authn.MFA.Transition" p:nextFlowStrategy-ref="checkSecondFactor" />
+        </entry>
+
+        <!-- An implicit final rule will return whatever the final flow returns. -->
+    </util:map>
+
+
+
+
+    <bean id="checkSecondFactor" parent="shibboleth.ContextFunctions.Scripted" factory-method="inlineScript"
+        p:customObject-ref="shibboleth.AttributeResolverService">
+        <constructor-arg>
+            <value>
+
+
+<![CDATA[
+        //Set up the logger
+        logger = Java.type("org.slf4j.LoggerFactory").getLogger("net.shibboleth.idp.checkSecondFactor");
+
+        nextFlow = null;
+
+        // Go straight to second factor if we have to, or set up for an attribute lookup first.
+        authCtx = input.getSubcontext("net.shibboleth.idp.authn.context.AuthenticationContext");
+        mfaCtx = authCtx.getSubcontext("net.shibboleth.idp.authn.context.MultiFactorAuthenticationContext");
+
+	//Note here, profileContext.isBrowserProfile() is necessary for supporting (by bypassing totp) non browser login flows, i.e. ECP
+        if (mfaCtx.isAcceptable() && profileContext.isBrowserProfile()) {
+
+                // Attribute check is required to decide if first factor alone is enough.
+                resCtx = input.getSubcontext("net.shibboleth.idp.attribute.resolver.context.AttributeResolutionContext", true);
+
+                // Look up the username using a standard function.
+                usernameLookupStrategyClass = Java.type("net.shibboleth.idp.session.context.navigate.CanonicalUsernameLookupStrategy");
+                usernameLookupStrategy = new usernameLookupStrategyClass();
+                resCtx.setPrincipal(usernameLookupStrategy.apply(input));
+
+
+		//Look up the "memberOf" attribute, and the "description" attribute
+		//  You'll remember that 'description' stores our totpseed.  We wouldn't
+		//  want to try totp if there were no seed stored
+                resCtx.getRequestedIdPAttributeNames().add("ibm-allgroups");
+                resCtx.getRequestedIdPAttributeNames().add("description");
+                resCtx.resolveAttributes(custom);
+
+
+                // Check for an attribute that authorizes use of this factor.
+                groupAttr = resCtx.getResolvedIdPAttributes().get("ibm-allgroups");
+                seedAttr = resCtx.getResolvedIdPAttributes().get("description");
+
+                valueType =  Java.type("net.shibboleth.idp.attribute.StringAttributeValue");
+
+                //Check if either attribute is null, and if the groupAttr contains the group we expect it to
+                if (groupAttr != null
+                        && seedAttr != null
+                        && groupAttr.getValues().contains(new valueType("cn=mfarequired,ou=groups,o=marist"))
+                        //&& seedAttr.getValues().contains(new valueType("     "))
+                        ) {
+                        nextFlow = "authn/Totp";
+
+                        for(i = 0; i < groupAttr.getValues().size(); i++){
+                                logger.debug("user group membership:  {}", groupAttr.getValues().get(i));
+                        }
+                }
+
+                input.removeSubcontext(resCtx);   // cleanup
+
+        }
+
+        nextFlow;   // pass control to second factor or end with the first
+
+]]>
+
+
+            </value>
+        </constructor-arg>
+    </bean>
+
+```
+
 ### Rebuild idp.war
 * Make sure you've removed any old versions of the totpauth-impl or totpauth-api libraries in $IDP-HOME/bin/build.sh
 ** Only necessary if you've deployed versions other than the current
