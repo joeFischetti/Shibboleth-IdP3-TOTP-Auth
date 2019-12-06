@@ -92,6 +92,7 @@ TODO
 - Troubleshoot/identify issues while running with oracle java instead of openjdk
 	It's related to the key sizes used in oracle java... the key's i've used require the "unlimited strength" policy
 	Details can be found [https://www.andreafortuna.org/2016/06/08/java-tips-how-to-fix-the-invalidkeyexception-illegal-key-size-or-default-parameters-runtime/]
+- Fix support for ECP based on implementation of login flow.  Currently, the flow fails because the process hangs while trying to verify the code (which with ECP is never provided)
 
 Requirements
 ------------
@@ -148,6 +149,7 @@ Add TOTP bean to $IDP_HOME/conf/authn/general-authn.xml, to the element:
 ```
         <bean id="authn/Totp" parent="shibboleth.AuthenticationFlow"
                 p:passiveAuthenticationSupported="true"
+		p:nonBrowserSupported="false"
                 p:forcedAuthenticationSupported="true">
             <property name="supportedPrincipals">
                 <util:list>
