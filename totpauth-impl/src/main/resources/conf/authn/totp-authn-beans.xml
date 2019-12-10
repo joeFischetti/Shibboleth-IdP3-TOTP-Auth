@@ -54,7 +54,13 @@
 	<bean id="shibboleth.totp.seedfetcher" class="live.pinger.shibboleth.totpauth.authn.impl.seed.AttributeSourcedSeedFetcher"
 		p:attrRes-ref="shibboleth.AttributeResolverService"
 		p:encryptionKey="%{totpauthn.encryptionKey}"
-		p:seedAttribute="%{totpauthn.seedAttribute}"/>
+		p:seedAttribute="%{totpauthn.seedAttribute}"
+		p:encryptionAlgo="%{totpauth.encryptionAlgo:#{null}}"
+		p:encryptionMode="%{totpauthn.encryptionMode:#{null}}"
+		p:encryptionPadding="%{totpauthn.encryptionPadding:#{null}}"
+
+
+/>
 
 
 </beans>

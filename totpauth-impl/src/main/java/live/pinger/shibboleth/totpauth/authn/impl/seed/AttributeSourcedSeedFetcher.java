@@ -35,27 +35,59 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 	//  attrRes - the attribute resolver service
 	private String seedAttribute;
 	private String encryptionKey;
+	private String encryptionAlgo;
+	private String encryptionMode;
+	private String encryptionPadding;
 	private ReloadableService<AttributeResolver> attrRes;
 
-	//public AttributeSourcedSeedFetcher(String seedAttribute) {
-	//	this.seedAttribute = seedAttribute;
-	//}
-	
+
+
 	//Setter methods used by spring
 	public void setSeedAttribute(String seedAttribute){
 		this.seedAttribute = seedAttribute;
 	}
+
 	public void setEncryptionKey(String encryptionKey){
 		this.encryptionKey = encryptionKey;
 	}
+
 	public void setAttrRes(ReloadableService attrRes){
 		this.attrRes = attrRes;
 	}
 
+	public void setEncryptionAlgo(String encryptionAlgo){
+		this.encryptionAlgo = encryptionAlgo;
+	}
+
+	public void setEncryptionMode(String encryptionMod){
+		this.encryptionMode = encryptionMode;
+	}
+
+	public void setEncryptionPadding(String encryptionPadding){
+		this.encryptionPadding = encryptionPadding;
+	}
 
 	@Override
 	public void getSeed(String username, TokenUserContext tokenUserCtx, String logPrefix,
 			@Nonnull final ProfileRequestContext profileRequestContext){
+
+		if(encryptionAlgo == null){
+			encryptionAlgo = new String("Blowfish");
+		}
+
+		if(encryptionMode == null){
+			encryptionMode = new String("ECB");
+		}
+
+		if(encryptionPadding == null){
+			encryptionPadding = new String("PKCS5Padding");
+		}
+	
+
+		log.debug("{} Encryption algorithm set to: {}", logPrefix, encryptionAlgo);
+		log.debug("{} Encryption mode set to: {}", logPrefix, encryptionMode);
+		log.debug("{} Encryption padding set to: {}", logPrefix, encryptionPadding);
+
 
 		//Define the AttributeResolutionContext so we can resolve attributes using the IdP
 		AttributeResolutionContext resCtx = (AttributeResolutionContext)profileRequestContext.getSubcontext(AttributeResolutionContext.class, true);
@@ -141,10 +173,10 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 	private String decrypt2(String ciphertext, String strkey) throws Exception{
 
 		//Set the secret key that we'll use to decrypt
-		SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), "Blowfish");
+		SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), encryptionAlgo);
 
 		//Use the blowfish cipher
-		Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
+		Cipher cipher = Cipher.getInstance(encryptionAlgo + "/" + encryptionMode + "/" + encryptionPadding);
 
 		//Set the mode to decryption, using the key
 		cipher.init(Cipher.DECRYPT_MODE, key);
