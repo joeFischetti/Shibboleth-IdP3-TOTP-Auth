@@ -144,7 +144,7 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 		SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), "Blowfish");
 
 		//Use the blowfish cipher
-		Cipher cipher = Cipher.getInstance("Blowfish");
+		Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
 
 		//Set the mode to decryption, using the key
 		cipher.init(Cipher.DECRYPT_MODE, key);

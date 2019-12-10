@@ -18,7 +18,7 @@ private static GoogleAuthenticator gAuth;
 
 public static void main(String args[]) throws Exception{
 
-	String plaintext, encryptedSeed, oldkey, newkey, argument;
+	String plaintext, encryptedSeed, oldkey, newkey, argument, iv;
 	int token;
 
 	if(args.length == 0){
@@ -26,9 +26,11 @@ public static void main(String args[]) throws Exception{
 		//generateKey2();
 		//plaintext = "G24YUKCHHXRDWCPR";
 		plaintext = generateKey2();
+		iv = generateKey2();
 
 
 		System.err.println("The plaintext (for the client device):  " + plaintext);
+		System.err.println("The iv for this run is:  " + iv);
 		String cipherText = encrypt2(plaintext, "somerandomkey");
 		System.err.println("The ciphertext (store in the directory): totpseed=(" + cipherText + ")");
 		System.err.println("The plaintext  (to verify decryption):  " + decrypt2(cipherText, "somerandomkey"));
@@ -116,7 +118,7 @@ public static void main(String args[]) throws Exception{
 
 public static String encrypt2(String plaintext, String strkey) throws Exception{
    SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), "Blowfish");
-        Cipher cipher = Cipher.getInstance("Blowfish");
+        Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
         if ( cipher == null || key == null) {
             throw new Exception("Invalid key or cypher");
         }
@@ -126,10 +128,20 @@ public static String encrypt2(String plaintext, String strkey) throws Exception{
 
 }
 
+/*public static String encryptAES(String plaintext, String strkey, String iv) throws Exception{
+    SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), "AES");
+    Cipher cipher = Cipher.getInstance("AES");
+    if(cipher == null || key == null || iv == null){
+        throw new Exception("Invalid key, cipher, or iv");
+    }
+    cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+    return bytesToHex(cipher.doFinal(plaintext.getBytes("UTF-8")));
+}
+*/
 public static String decrypt2(String ciphertext, String strkey) throws Exception{
 
 	SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), "Blowfish");
-         Cipher cipher = Cipher.getInstance("Blowfish");
+         Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
          cipher.init(Cipher.DECRYPT_MODE, key);
          byte[] decrypted = cipher.doFinal(hexToBytes(ciphertext));
          return new String(decrypted);
