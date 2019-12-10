@@ -4,7 +4,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.Cipher;
+
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -169,28 +171,40 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 	}
 
 
-	//Function used to decrypt the key we got using Blowfish
 	private String decrypt2(String ciphertext, String strkey) throws Exception{
-
-		//Set the secret key that we'll use to decrypt
+	
+		//define a key (get the key from the arguments)
+		//  Use the global algorithm defined above
+		//  Same for the cipher (global algo, mode, and padding)
 		SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), encryptionAlgo);
-
-		//Use the blowfish cipher
 		Cipher cipher = Cipher.getInstance(encryptionAlgo + "/" + encryptionMode + "/" + encryptionPadding);
-
-		//Set the mode to decryption, using the key
-		cipher.init(Cipher.DECRYPT_MODE, key);
-
-		//decrypted will be a byte array.  Our encryption scheme creates a byte
-		//	array and then bytesToHex that byte array (to make it easy to store
-		//	as a string or display).  We need to convert hex from the attribute back into a byte
-		//	array AND THEN decrypt it
-		byte[] decrypted = cipher.doFinal(hexToBytes(ciphertext));
-
-		//Return
+	         
+		//Declare the variable for the decrypted byte array
+		byte[] decrypted;
+	
+		//If there's a : in the string, we have an ecrypted seed stored as
+		//  iv:ciphertext
+		//  We'll need to split it apart and then decrypt it
+		if(ciphertext.indexOf(":") != -1){
+			String iv = ciphertext.split(":")[0];
+			String ct = ciphertext.split(":")[1];
+	
+			IvParameterSpec ivParams = new IvParameterSpec(hexToBytes(iv));
+			cipher.init(Cipher.DECRYPT_MODE, key, ivParams);
+	
+			decrypted = cipher.doFinal(hexToBytes(ct));
+		}
+	
+		//If there was no iv defined, then just decrypt it (mode should be ECB)
+		else{
+			cipher.init(Cipher.DECRYPT_MODE, key);
+			decrypted = cipher.doFinal(hexToBytes(ciphertext));
+		}
+	
+		//Return the decrypted value
 		return new String(decrypted);
+	}	
 
-	}
 
 	//Converts a string in hex notation to a byte array
 	private byte[] hexToBytes(String s) throws Exception{

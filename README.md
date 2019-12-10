@@ -54,7 +54,7 @@ This authn flow will take the c14n principal name and perform the token validati
 
 
 The original implementation of this authn flow had a separate ldap configuration.  This implementation will assume the totp seed is stored in a database that the attribute resolver has the ability to pull from.
-It will also assume the attribute is encrypted using a secret key (configured in a properties file). The attribute should be in the form of "totpseed=(ENCRYPTED VALUE)".  An example ldif might look something like:
+It will also assume the attribute is encrypted using a secret key, encryption algorithm, mode, and padding (configured in a properties file, defaulted to blowfish/ecb/pkcs5padding). The attribute should be in the form of "totpseed=(iv:ENCRYPTED VALUE)" with, optionally, other tags before or after the seed.  Note for encryption modes that don't require the iv, it's possible to omit the iv in the seed.  The other tags will be ignored by this plugin and whould be used for outside tooling.  An example ldif is below.  In this case there's an additional tag called "friendlyName" which is used for identifying the seed (when there's more than one) for the end user.  
 
 ```
 # extended LDIF
@@ -69,12 +69,14 @@ It will also assume the attribute is encrypted using a secret key (configured in
 dn: uniqueidentifier=1234567,o=base
 description: Some existing description value that may or may not take up more
  than one line
-description: totpseed=(ANENCRYPTEDSEEDVALUETHATWILLBEUSEDBYTHEIDP)
+description: totpseed=(ANENCRYPTEDSEEDVALUETHATWILLBEUSEDBYTHEIDP)friendlyNa
+  me=(AndroidPhone)
 
 # 1234568, base
 dn: uniqueidentifier=1234568,o=base
 description: Some existing description
-description: totpseed=(ANENCRYPTEDSEEDVALUETHATWILLBEUSEDBYTHEIDP)
+description: totpseed=(ANENCRYPTEDSEEDVALUETHATWILLBEUSEDBYTHEIDP)friendlyNa
+  me=(Google Authenticator)
 
 # search result
 search: 2
@@ -92,7 +94,7 @@ TODO
 - Troubleshoot/identify issues while running with oracle java instead of openjdk
 	It's related to the key sizes used in oracle java... the key's i've used require the "unlimited strength" policy
 	Details can be found [https://www.andreafortuna.org/2016/06/08/java-tips-how-to-fix-the-invalidkeyexception-illegal-key-size-or-default-parameters-runtime/]
-- Fix support for ECP based on implementation of login flow.  Currently, the flow fails because the process hangs while trying to verify the code (which with ECP is never provided)
+
 
 Requirements
 ------------
@@ -101,6 +103,7 @@ Requirements
 - Java 8
 - Slightly more than a basic understanding of identity management
 - Some way to insert encrypted seeds into a directory.
+  - Currently, the plugin only supports seeds encrypted with ebc algorithms (there's no support for an IV).
 
 
 Installing
@@ -283,6 +286,9 @@ you'll want to create a new attribute definition that will reference the seed at
 
 The attribute in your directory will need to match the following form:
 totpseed=(.......)
+It's also possible to store the encrypted value with an iv (for other encryption modes that need such things)
+In that case your seed would be:
+totpseed=(iv:encryptedseed)
 
 The helper below will generate the encrypted value that can be stored in the directory.
 

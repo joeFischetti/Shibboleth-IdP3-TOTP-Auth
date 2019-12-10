@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -cp "./libs/*:./bin" live.pinger.shibboleth.helper.BasicEncryption $1
+java -cp "./libs/*:./bin" live.pinger.shibboleth.helper.BasicEncryption $1 $2

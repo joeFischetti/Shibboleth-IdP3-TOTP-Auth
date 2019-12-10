@@ -1,6 +1,7 @@
 package live.pinger.shibboleth.helper;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import java.security.SecureRandom;
@@ -14,14 +15,63 @@ public class BasicEncryption{
 private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 private static GoogleAuthenticator gAuth;
 
-
+private static String algo, mode, padding;
 
 public static void main(String args[]) throws Exception{
 
-	String plaintext, encryptedSeed, oldkey, newkey, argument, iv;
+	String key, plaintext, encryptedSeed, oldkey, newkey, argument, iv;
 	int token;
 
-	if(args.length == 0){
+	algo = new String("Blowfish");
+	mode = new String("ECB");
+	padding = new String("PKCS5Padding");
+
+
+
+	if(args.length < 2){
+
+		System.out.println("This program must be run with command line arguments");
+		System.out.println("At the very least, you must specify a key to generate a new seed/encrypted value");
+		System.out.println("java -cp... live.pinger.helpers.BasicEncryption --key somekey\n\n");
+		String instructions = new String("Other arguments include:\n");
+		instructions += "	-- encryptedSeed SOMEENCRYPTEDSEEDVALUE\n";
+		instructions += "		Used when performing seed decryption\n\n";
+		instructions += "	-- oldkey oldkeyvalue\n";
+		instructions += "		The old key to use when performing key rollover\n\n";
+		instructions += "	-- newkey newkeyvalue\n";
+		instructions += "		The new key to use when performing key rollover\n\n";
+		instructions += "	-- quiet\n";
+		instructions += "		Quietly output only the action that was performed\n\n";
+		instructions += "	-- algo\n";
+		instructions += "		Define the algorithm used for encryption/decryption\n";
+		instructions += "		Defaults to \"Blowfish\"\n\n";
+		instructions += "	-- mode\n";
+		instructions += "		Define the mode used for encryption/decryption\n";
+		instructions += "		Defaults to \"ECB\"\n\n";
+
+
+		System.out.println(instructions);
+
+	}
+
+	else if(args.length == 2){
+
+		key = new String();
+
+		for(int i = 0; i < args.length; i++){
+			argument = args[i].toLowerCase();
+			if(argument.indexOf("--") == 0){
+				//System.out.println("Processing: " + argument.substring(2));
+				switch(argument.substring(2)){
+					case "key":
+						key = args[i+1];
+						break;
+				}
+			}
+		}
+
+
+
 		System.err.println("No seed provided, generating a new one");
 		//generateKey2();
 		//plaintext = "G24YUKCHHXRDWCPR";
@@ -30,13 +80,10 @@ public static void main(String args[]) throws Exception{
 
 
 		System.err.println("The plaintext (for the client device):  " + plaintext);
-		System.err.println("The iv for this run is:  " + iv);
-		String cipherText = encrypt2(plaintext, "somerandomkey");
+		String cipherText = encrypt2(plaintext, key);
 		System.err.println("The ciphertext (store in the directory): totpseed=(" + cipherText + ")");
-		System.err.println("The plaintext  (to verify decryption):  " + decrypt2(cipherText, "somerandomkey"));
+		System.err.println("The plaintext  (to verify decryption):  " + decrypt2(cipherText, key));
 		System.out.println("otpauth://totp/Shibboleth?secret=" + plaintext);
-
-
 	}
 	else{
 		encryptedSeed = new String();
@@ -44,6 +91,7 @@ public static void main(String args[]) throws Exception{
 		newkey = new String();
 		plaintext = new String();
 		token = 0;
+		key = new String();
 		boolean quiet = false;
 		boolean tokenValidate = false;
 
@@ -78,6 +126,18 @@ public static void main(String args[]) throws Exception{
 					case "token":
 						token = Integer.parseInt(args[i+1]);
 						break;
+					case "key":
+						key = args[i+1];
+						break;
+					case "algo":
+						algo = args[i+1];
+						break;
+					case "mode":
+						mode = args[i+1];
+						break;
+					case "padding":
+						padding = args[i+1];
+						break;
 				}
 			}
 		}
@@ -85,8 +145,8 @@ public static void main(String args[]) throws Exception{
 		if(tokenValidate){
 			if(validateToken(plaintext,token)){
 				System.out.println("true");
-				if(!newkey.equals("")){
-					System.out.println("totpseed=(" + encrypt2(plaintext,newkey) + ")");
+				if(!key.equals("")){
+					System.out.println("totpseed=(" + encrypt2(plaintext,key) + ")");
 				}
 			}
 			else{
@@ -100,10 +160,11 @@ public static void main(String args[]) throws Exception{
 			plaintext = generateKey2();
 		}
 		else{
-			plaintext = decrypt2(encryptedSeed, oldkey);
+			System.out.println("Encrypted seed provided:  " + encryptedSeed);
+			plaintext = decrypt2(encryptedSeed, key);
 		}
 		
-		String newCipher = encrypt2(plaintext, newkey);
+		String newCipher = encrypt2(plaintext, key);
 		
 		if(!quiet){
 			System.out.println(plaintext);
@@ -117,36 +178,57 @@ public static void main(String args[]) throws Exception{
 }
 
 public static String encrypt2(String plaintext, String strkey) throws Exception{
-   SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), "Blowfish");
-        Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
+    SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), algo);
+        Cipher cipher = Cipher.getInstance(algo + "/" + mode + "/" + padding);
         if ( cipher == null || key == null) {
             throw new Exception("Invalid key or cypher");
         }
         cipher.init(Cipher.ENCRYPT_MODE, key);
-	return bytesToHex(cipher.doFinal(plaintext.getBytes("UTF-8")));
 
+	String ciphertext = new String(bytesToHex(cipher.doFinal(plaintext.getBytes("UTF-8"))));
+
+	if(cipher.getIV() != null){
+		System.out.println("Used IV");
+		return new String(bytesToHex(cipher.getIV()) + ":" + ciphertext);
+	}
+	else{
+		return ciphertext;
+	}
 
 }
 
-/*public static String encryptAES(String plaintext, String strkey, String iv) throws Exception{
-    SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), "AES");
-    Cipher cipher = Cipher.getInstance("AES");
-    if(cipher == null || key == null || iv == null){
-        throw new Exception("Invalid key, cipher, or iv");
-    }
-    cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-    return bytesToHex(cipher.doFinal(plaintext.getBytes("UTF-8")));
-}
-*/
 public static String decrypt2(String ciphertext, String strkey) throws Exception{
 
-	SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), "Blowfish");
-         Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
-         cipher.init(Cipher.DECRYPT_MODE, key);
-         byte[] decrypted = cipher.doFinal(hexToBytes(ciphertext));
-         return new String(decrypted);
+	//define a key (get the key from the arguments)
+	//  Use the global algorithm defined above
+	//  Same for the cipher (global algo, mode, and padding)
+	SecretKeySpec key = new SecretKeySpec(strkey.getBytes("UTF-8"), algo);
+	Cipher cipher = Cipher.getInstance(algo + "/" + mode + "/" + padding);
+         
+	//Declare the variable for the decrypted byte array
+	byte[] decrypted;
 
+	//If there's a : in the string, we have an ecrypted seed stored as
+	//  iv:ciphertext
+	//  We'll need to split it apart and then decrypt it
+	if(ciphertext.indexOf(":") != -1){
+		String iv = ciphertext.split(":")[0];
+		String ct = ciphertext.split(":")[1];
 
+		IvParameterSpec ivParams = new IvParameterSpec(hexToBytes(iv));
+		cipher.init(Cipher.DECRYPT_MODE, key, ivParams);
+
+		decrypted = cipher.doFinal(hexToBytes(ct));
+	}
+
+	//If there was no iv defined, then just decrypt it (mode should be ECB)
+	else{
+		cipher.init(Cipher.DECRYPT_MODE, key);
+		decrypted = cipher.doFinal(hexToBytes(ciphertext));
+	}
+
+	//Return the decrypted value
+	return new String(decrypted);
 }	
 
 public static boolean validateToken(String seed, int token) {
