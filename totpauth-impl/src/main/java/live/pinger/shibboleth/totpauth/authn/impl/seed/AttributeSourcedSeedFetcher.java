@@ -1,4 +1,5 @@
 package live.pinger.shibboleth.totpauth.authn.impl.seed;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -6,8 +7,6 @@ import java.util.Map;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.Cipher;
-
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import live.pinger.shibboleth.totpauth.api.authn.SeedFetcher;
@@ -15,7 +14,6 @@ import live.pinger.shibboleth.totpauth.api.authn.context.TokenUserContext;
 import org.opensaml.profile.context.ProfileRequestContext;
 import javax.annotation.Nonnull;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
-
 import net.shibboleth.idp.attribute.ScopedStringAttributeValue;
 import net.shibboleth.idp.attribute.StringAttributeValue;
 import net.shibboleth.idp.attribute.context.AttributeContext;
