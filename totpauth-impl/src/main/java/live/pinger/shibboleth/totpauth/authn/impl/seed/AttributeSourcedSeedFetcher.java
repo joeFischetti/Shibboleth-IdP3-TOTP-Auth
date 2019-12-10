@@ -1,6 +1,5 @@
 package live.pinger.shibboleth.totpauth.authn.impl.seed;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -14,34 +13,37 @@ import live.pinger.shibboleth.totpauth.api.authn.SeedFetcher;
 import live.pinger.shibboleth.totpauth.api.authn.context.TokenUserContext;
 import org.opensaml.profile.context.ProfileRequestContext;
 import javax.annotation.Nonnull;
-import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
-import net.shibboleth.idp.attribute.ScopedStringAttributeValue;
-import net.shibboleth.idp.attribute.StringAttributeValue;
-import net.shibboleth.idp.attribute.context.AttributeContext;
 import net.shibboleth.idp.attribute.resolver.context.AttributeResolutionContext;
 import net.shibboleth.idp.attribute.resolver.AttributeResolver;
 import net.shibboleth.idp.attribute.IdPAttribute;
 import net.shibboleth.utilities.java.support.service.ReloadableService;
 
-
+/**
+ * A class that extracts a totpseed from a deployer defined attribute in an attribute store
+ * using the {@link net.shibboleth.idp.attribute.resolver.AttributeResolver}.
+ * 
+ * @return an array of plaintext totp seeds associated with the user
+ *  
+ * @author Joe Fischetti
+ */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class AttributeSourcedSeedFetcher implements SeedFetcher {
 
 	//Set up the logger
-	private final Logger log = LoggerFactory.getLogger(LdapSeedFetcher.class);
+	private final Logger log = LoggerFactory.getLogger(AttributeSourcedSeedFetcher.class);
 
-	//Local variables for attribute resolution
-	//  seedAttribute - is the attribute that stores the seed
-	//  encryptionKey - is the stringvariable used for encrypting (in this case decrypting)
-	//  	they key that was retrieved from the directory
-	//  attrRes - the attribute resolver service
+	/**Local variables for attribute resolution
+	 *   seedAttribute - is the attribute that stores the seed
+	 *   encryptionKey - is the stringvariable used for encrypting (in this case decrypting)
+	 *   	they key that was retrieved from the directory
+	 *   attrRes - the attribute resolver service 
+	 */
 	private String seedAttribute;
 	private String encryptionKey;
 	private String encryptionAlgo;
 	private String encryptionMode;
 	private String encryptionPadding;
 	private ReloadableService<AttributeResolver> attrRes;
-
-
 
 	//Setter methods used by spring
 	public void setSeedAttribute(String seedAttribute){
@@ -60,7 +62,7 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 		this.encryptionAlgo = encryptionAlgo;
 	}
 
-	public void setEncryptionMode(String encryptionMod){
+	public void setEncryptionMode(String encryptionMode){
 		this.encryptionMode = encryptionMode;
 	}
 
@@ -169,7 +171,15 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 
 	}
 
-
+	/**
+	 * A method that decrypts a given ciphertext totpseed.
+	 * 
+	 *  @param ciphertext the ciphertext directly from the attribute store
+	 *  @param strkey the key defined in the deployers prop file
+	 *  
+	 *  @return the plaintext totp seed used for token validation
+	 * 
+	 */
 	private String decrypt2(String ciphertext, String strkey) throws Exception{
 	
 		//define a key (get the key from the arguments)
@@ -205,7 +215,12 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 	}	
 
 
-	//Converts a string in hex notation to a byte array
+	/**
+	 * Method that converts a string in hex notation to a byte array
+	 *   @param s string in the form 686578737472696E67
+	 *   
+	 *   @return byte array
+	 */
 	private byte[] hexToBytes(String s) throws Exception{
 
 		//Length of the string
@@ -223,7 +238,13 @@ public class AttributeSourcedSeedFetcher implements SeedFetcher {
 		return data;
 	}
 
-	//Function to extract the seed from the attribute that was passed in
+	/**
+	 * Method that takes the attribute value in raw form and parses out the 
+	 *   value in the totpeed(...) tag
+	 *   
+	 * @param input attribute seed
+	 * @return the encrypted seed inside the (...)
+	 */
 	private String extractSeed(String input){
 		//build a pattern to use for matching the seed
 		String pattern = "(.*)totpseed=\\((.*?)\\)(.*)";

@@ -16,14 +16,10 @@ import live.pinger.shibboleth.totpauth.api.authn.SeedFetcher;
 import live.pinger.shibboleth.totpauth.api.authn.TokenValidator;
 import live.pinger.shibboleth.totpauth.api.authn.context.TokenUserContext;
 import live.pinger.shibboleth.totpauth.api.authn.context.TokenUserContext.AuthState;
-import net.shibboleth.idp.session.context.SessionContext;
 import net.shibboleth.idp.session.context.navigate.CanonicalUsernameLookupStrategy;
-import net.shibboleth.idp.attribute.IdPAttribute;
 import net.shibboleth.idp.authn.AbstractValidationAction;
 import net.shibboleth.idp.authn.AuthnEventIds;
 import net.shibboleth.idp.authn.context.AuthenticationContext;
-import net.shibboleth.idp.authn.context.SubjectContext;
-import net.shibboleth.idp.authn.context.UsernamePasswordContext;
 import net.shibboleth.idp.authn.principal.UsernamePrincipal;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
@@ -84,6 +80,7 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 
 	}
 
+	
 	@Override
 	protected boolean doPreExecute(
 			@Nonnull ProfileRequestContext profileRequestContext,
@@ -211,6 +208,13 @@ public class TotpTokenValidator extends AbstractValidationAction implements Toke
 
 	//populate the Subject name and return it.  Using the principal from the 
 	//CanonicalUsernameLookupStrategy that we ran first
+	
+	/**
+	 * Method that populates the subject name and returns it.  It uses the princpal
+	 * from the {@link net.shibboleth.idp.session.context.navigate.CanonicalUsernameLookupStrategy}
+	 * 
+	 * @return subject
+	 */
 	@Override
 	protected Subject populateSubject(Subject subject) {
 		log.debug("{} TokenValidator populateSubject is called", getLogPrefix());		
