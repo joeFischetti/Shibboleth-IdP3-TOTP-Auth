@@ -1,5 +1,6 @@
 package live.pinger.shibboleth.totpauth.authn.impl.seed;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
