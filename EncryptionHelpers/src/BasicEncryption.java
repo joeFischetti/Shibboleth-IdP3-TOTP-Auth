@@ -341,6 +341,88 @@ public static String generateKey() throws Exception{
    }
 
 
+/**
+ * Encodes data into an AEAD-encrypted blob, gzip(exp|data)
+ *
+ * <ul>
+ * <li>exp = expiration time of the data; 8 bytes; Big-endian</li>
+ * <li>data = the data; a UTF-8-encoded string</li>
+ * </ul>
+ *
+ * <p>As part of encryption, the key alias is supplied as additional authenticated data
+ * to the cipher. Afterwards, the encrypted data is prepended by the IV and then again by the alias
+ * (in length-prefixed UTF-8 format), which identifies the key used. Finally the result is base64-encoded.</p>
+ *
+ * @param data the data to wrap
+ * @param exp expiration time
+ * @return the encoded blob
+ * @throws DataSealerException if the wrapping operation fails
+ */
+@Nonnull public String wrap(@Nonnull @NotEmpty final String data, @Nonnull final Instant exp)
+        throws DataSealerException {
+
+    if (data == null || data.length() == 0) {
+        throw new IllegalArgumentException("Data must be supplied for the wrapping operation");
+    }
+
+    try {
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+        final byte[] iv = new byte[cipher.getBlockSize()];
+        random.nextBytes(iv);
+        final GCMParameterSpec params = new GCMParameterSpec(128, iv);
+
+        final Pair<String,SecretKey> defaultKey = keyStrategy.getDefaultKey();
+
+        cipher.init(Cipher.ENCRYPT_MODE, defaultKey.getSecond(), params);
+        cipher.updateAAD(defaultKey.getFirst().getBytes());
+
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        final GZIPOutputStream compressedStream = new GZIPOutputStream(byteStream);
+        final DataOutputStream dataStream = new DataOutputStream(compressedStream);
+
+        dataStream.writeLong(exp.toEpochMilli());
+
+        int count = 0;
+        int start = 0;
+        final int dataLength = data.length();
+        while (start < dataLength) {
+            dataStream.writeUTF(data.substring(start, start + Math.min(dataLength - start, CHUNK_SIZE)));
+            start += Math.min(dataLength - start, CHUNK_SIZE);
+            log.trace("Wrote chunk #{} to output stream", ++count);
+        }
+
+        dataStream.flush();
+        compressedStream.flush();
+        compressedStream.finish();
+        byteStream.flush();
+
+        final byte[] plaintext = byteStream.toByteArray();
+
+        final byte[] encryptedData = new byte[cipher.getOutputSize(plaintext.length)];
+        int outputLen = cipher.update(plaintext, 0, plaintext.length, encryptedData, 0);
+        outputLen += cipher.doFinal(encryptedData, outputLen);
+
+        final ByteArrayOutputStream finalByteStream = new ByteArrayOutputStream();
+        final DataOutputStream finalDataStream = new DataOutputStream(finalByteStream);
+        finalDataStream.writeUTF(defaultKey.getFirst());
+        finalDataStream.write(iv);
+        finalDataStream.write(encryptedData, 0, outputLen);
+        finalDataStream.flush();
+        finalByteStream.flush();
+
+        return new String(encoder.encode(finalByteStream.toByteArray()), StandardCharsets.UTF_8);
+
+    } catch (final Exception e) {
+        log.error("Exception wrapping data: {}", e.getMessage());
+        throw new DataSealerException("Exception wrapping data", e);
+    }
+
+}
+
+
+
+
 public static String generateKey2(){
 
     int length = 16;
