@@ -11,12 +11,27 @@ MFA introduces additional factors on top of the password (something you know), t
 
 This plugin implements MFA using "something you have", or more specifically, a time based one time password (totp).
 
-The major downside with some of the other impelementations for MFA (such as Duo), is the reliance on an outside service for authentication.
-In addition to spreading out the management footprint and introducing this dependency
-- Duo supports push notifications which are a known attack attack vector.
-- TOTP keys are "pulled".  i.e. the user needs to look at it and provide it.  There's no chance they'll passively click a notification.
+Below is a table showing some of the pros and cons of this plugin vs something like Duo:
+
+Feature|Duo|This plugin|Winner
+---|---|---|---
+One time passcode|Yes|Yes|Tie
+Additional factors|Yes|No|Duo(1)
+Non Browser Support|Yes|No|Duo(2)
+Additional external dependencies|Yes|No|This Plugin
+Additional cost per user|Yes|No|This Plugin
+Cost of initial setup/implementation|-|-|Tie(3)
+Onboarding process|Yes|BYO|Duo
+
+(1) Additional Factors - Duo wins in support for this, but that comes with a potential downside.  The idea that push notifications for MFA are bad has been floated by some, primarily because they're susceptible to social engineering
+
+(2) Non Browser Support - Duo also wins in this.  By "non browser support" we're referring to authentication methods that can happen on behalf of the user without interfacing with a browser; i.e. ECP.  ECP is used by Office 365 for basic authentication, though it's supposed to be sunsetted in the fall of 2020.  That said *ECP can be problematic with respect to office 365 because authentication happens by Microsoft proxy servers.  Any time the ECP client attempts to connect, it could trigger MFA, and the user could, in theory, be bombarded with push alerts that they're more likely to accept... This goes back to number 1, where attempts to MFA in using an ECP client can be made when the user is more likely to be accepting those push alerts.*
+
+(3) BOTH MFA implementations have cost associated with their configuration.  Duo has a dashboard which requires an administrator to learn and setup.  This plugin requires additional infrastructure for token management.
 
 That said, no MFA is perfect and it can be a pain in the ass for the users.
+
+Finally, it would also be possible to implement *both* this plugin and duo for different users.  Their implementation isn't mutually exclusive and depending on the end user requirements, one might be better than the other.
 
 ## What does this plugin do?
 This plugin hooks into the built in MFA flows within the Shibboleth IDP to provide support for a totp.  
