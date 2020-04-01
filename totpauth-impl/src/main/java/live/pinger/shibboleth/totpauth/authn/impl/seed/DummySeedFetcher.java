@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 
 
 public class DummySeedFetcher implements SeedFetcher {
-	private final Logger log = LoggerFactory.getLogger(LdapSeedFetcher.class);
+	private final Logger log = LoggerFactory.getLogger(DummySeedFetcher.class);
 
 
 	public DummySeedFetcher() {
