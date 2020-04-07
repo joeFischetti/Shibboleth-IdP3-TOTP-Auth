@@ -1,0 +1,45 @@
+   <bean id="checkSecondFactor" parent="shibboleth.ContextFunctions.Scripted" factory-method="inlineScript" p:customObject-ref="shibboleth.AttributeResolverService">
+        <constructor-arg>
+            <value>
+            <![CDATA[
+                nextFlow = null;
+
+                // Check if second factor is necessary for request to be satisfied.
+                authCtx = input.getSubcontext("net.shibboleth.idp.authn.context.AuthenticationContext");
+                mfaCtx = authCtx.getSubcontext("net.shibboleth.idp.authn.context.MultiFactorAuthenticationContext");
+                if (mfaCtx.isAcceptable()  && profileContext.isBrowserProfile() ) {
+                 // Attribute check is required to decide if first factor alone is enough.
+                resCtx = input.getSubcontext("net.shibboleth.idp.attribute.resolver.context.AttributeResolutionContext", true);
+
+                // Look up the username using a standard function.
+                usernameLookupStrategyClass = Java.type("net.shibboleth.idp.session.context.navigate.CanonicalUsernameLookupStrategy");
+                usernameLookupStrategy = new usernameLookupStrategyClass();
+                resCtx.setPrincipal(usernameLookupStrategy.apply(input));
+
+               
+                resCtx.getRequestedIdPAttributeNames().add("otpseed");
+                resCtx.resolveAttributes(custom);
+
+
+                // Check for an attribute that authorizes use of this factor.
+                
+                seedAttr = resCtx.getResolvedIdPAttributes().get("otpseed");
+
+                valueType =  Java.type("net.shibboleth.idp.attribute.StringAttributeValue");
+
+                //Check if either attribute is null, and if the groupAttr contains the group we expect it to
+                if (seedAttr != null)
+                     {
+                        nextFlow = "authn/Totp";
+
+                       
+                        }
+                        input.removeSubcontext(resCtx);   //cleanup
+                }
+                
+                nextFlow;   // pass control to second factor or end with the first
+            ]]>
+            </value>
+        </constructor-arg>
+    </bean>
+
