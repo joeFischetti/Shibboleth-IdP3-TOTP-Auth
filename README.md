@@ -1,12 +1,13 @@
 [![Apache License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-[![Build Status](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth.svg?branch=master)](https://travis-ci.org/korteke/Shibboleth-IdP3-TOTP-Auth)
+# This is a fork of joeFischetti/Shibboleth-IdP3-TOTP-Auth trying to target Shibboleth IDP v4
+Under this line there is the original documentation:
 
 # Shibboleth-IdP3-TOTP-Auth
-Google authenticator authentication module for Shibboleth IdP v3. 
+Google authenticator authentication module for Shibboleth IdP v3.
 
 ## Why use this plugin?
-MFA, or multi factor authentication, is used to provide additional security on top of standard password based authentication.  
-The [obvious] problem with password-only authentication is that when a password for an account is compromised, that account is compromised.  
+MFA, or multi factor authentication, is used to provide additional security on top of standard password based authentication.
+The [obvious] problem with password-only authentication is that when a password for an account is compromised, that account is compromised.
 MFA introduces additional factors on top of the password (something you know), typically in the form of "something you have" or "something you are".
 
 This plugin implements MFA using "something you have", or more specifically, a time based one time password (totp).
@@ -34,8 +35,8 @@ That said, no MFA is perfect and it can be a pain in the ass for the users.
 Finally, it would also be possible to implement *both* this plugin and duo for different users.  Their implementation isn't mutually exclusive and depending on the end user requirements, one might be better than the other.
 
 ## What does this plugin do?
-This plugin hooks into the built in MFA flows within the Shibboleth IDP to provide support for a totp.  
-It's was developed as a fork to the original plugin by [].  
+This plugin hooks into the built in MFA flows within the Shibboleth IDP to provide support for a totp.
+It's was developed as a fork to the original plugin by [].
 Details are below, but in short, that plugin didn't work with current versions of the idp for a number of reasons:
 - There was no way to hook it into the MFA login flow
 - It managed/called the password flow interally
@@ -69,7 +70,7 @@ This authn flow will take the c14n principal name and perform the token validati
 
 
 The original implementation of this authn flow had a separate ldap configuration.  This implementation will assume the totp seed is stored in a database that the attribute resolver has the ability to pull from.
-It will also assume the attribute is encrypted using a secret key, encryption algorithm, mode, and padding (configured in a properties file, defaulted to blowfish/ecb/pkcs5padding). The attribute should be in the form of "totpseed=(iv:ENCRYPTED VALUE)" with, optionally, other tags before or after the seed.  Note for encryption modes that don't require the iv, it's possible to omit the iv in the seed.  The other tags will be ignored by this plugin and whould be used for outside tooling.  An example ldif is below.  In this case there's an additional tag called "friendlyName" which is used for identifying the seed (when there's more than one) for the end user.  
+It will also assume the attribute is encrypted using a secret key, encryption algorithm, mode, and padding (configured in a properties file, defaulted to blowfish/ecb/pkcs5padding). The attribute should be in the form of "totpseed=(iv:ENCRYPTED VALUE)" with, optionally, other tags before or after the seed.  Note for encryption modes that don't require the iv, it's possible to omit the iv in the seed.  The other tags will be ignored by this plugin and whould be used for outside tooling.  An example ldif is below.  In this case there's an additional tag called "friendlyName" which is used for identifying the seed (when there's more than one) for the end user.
 
 ```
 # extended LDIF
@@ -140,10 +141,10 @@ Directory structure:
 └── views
 </pre>
 
-* Copy conf --> $IDP-HOME/conf  
-* Copy edit-webapp  --> $IDP-HOME/edit-webapp  
-* Copy flows  --> $IDP-HOME/flows  
-* Copy views  --> $IDP-HOME/views  
+* Copy conf --> $IDP-HOME/conf
+* Copy edit-webapp  --> $IDP-HOME/edit-webapp
+* Copy flows  --> $IDP-HOME/flows
+* Copy views  --> $IDP-HOME/views
 
 Modify $IDP_HOME/conf/idp.properties:
 
@@ -297,7 +298,7 @@ you'll want to create a new attribute definition that will reference the seed at
                 <Dependency ref="myLDAP" />
         </AttributeDefinition>
 
-``` 
+```
 
 The attribute in your directory will need to match the following form:
 totpseed=(.......)
