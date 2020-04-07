@@ -9,8 +9,8 @@ import javax.security.auth.Subject;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Function;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
+import java.util.function.Function;
 
 import live.pinger.shibboleth.totpauth.api.authn.SeedFetcher;
 import live.pinger.shibboleth.totpauth.api.authn.TokenValidator;
