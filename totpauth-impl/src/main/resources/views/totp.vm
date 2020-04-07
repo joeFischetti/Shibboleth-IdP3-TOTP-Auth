@@ -32,7 +32,7 @@ p.error {
 
 
            <form action="$flowExecutionUrl" method="post">
-
+            #parse("csrf/csrf.vm")
             <div class="form-element-wrapper">
               <label for="tokenNumber">Token code</label>
               <input class="form-element form-field" id="j_tokenNumber" name="j_tokenNumber" type="text" autofocus>
